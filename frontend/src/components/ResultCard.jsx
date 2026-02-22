@@ -71,7 +71,7 @@ alert("APA Citation copied to clipboard!");
 
  <div style={{ fontSize: '0.9rem', color: '#333' }}>
  <p style={{ marginBottom: '8px' }}><strong>Category:</strong> {record.category}</p>
- <p style={{ marginBottom: '8px' }}><strong>Date:</strong> {record.eventDate}</p>
+ <p style={{ marginBottom: '8px' }}><strong>Date:</strong> {record.dateOfPublication || record.eventDate || 'n.d.'}</p>
 
          {/* 🟢 NEW: Displaying the Newspaper and Page Number */}
          <p style={{ marginBottom: '8px' }}>
