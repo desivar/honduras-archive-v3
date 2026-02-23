@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Sidebar = ({ user, onLogout, totalCount }) => {
+const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {  // 👈 add lastUpdate prop
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -35,8 +35,7 @@ const Sidebar = ({ user, onLogout, totalCount }) => {
       height: '100vh', 
       padding: '20px', 
       position: 'fixed', 
-      top: 0,
-      left: 0,
+      top: 0, left: 0,
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
@@ -54,7 +53,7 @@ const Sidebar = ({ user, onLogout, totalCount }) => {
         Newspaper Archive
       </h2>
 
-      {/* 📊 Magnitud del Archivo Display */}
+      {/* 📊 Magnitud + Last Update */}
       <div style={{ 
         backgroundColor: 'rgba(255,255,255,0.1)', 
         padding: '10px', 
@@ -65,133 +64,12 @@ const Sidebar = ({ user, onLogout, totalCount }) => {
         <p style={{ margin: 0, fontSize: '0.85rem', color: '#EFE7DD' }}>
           <strong>Magnitud:</strong> {totalCount || 0} Registros
         </p>
-      </div>
-      
-      {/* User Info / Login */}
-      {user ? (
-        <div style={{
-          backgroundColor: 'rgba(255,255,255,0.1)',
-          padding: '12px',
-          borderRadius: '6px',
-          marginBottom: '20px'
-        }}>
-          <p style={{ margin: 0, fontSize: '0.85rem', marginBottom: '5px', color: '#ACA37E' }}>
-            Logged in as:
+        {/* 👇 Add this */}
+        {lastUpdate && (
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#EFE7DD', marginTop: '5px' }}>
+            <strong>Last Update:</strong> {new Date(lastUpdate).toLocaleDateString()}
           </p>
-          <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '10px' }}>
-            {user.username}
-          </p>
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              color: '#EFE7DD',
-              border: '1px solid #ACA37E',
-              padding: '6px',
-              borderRadius: '4px',
-              fontSize: '0.85rem',
-              cursor: 'pointer'
-            }}
-          >
-            🚪 Logout
-          </button>
-        </div>
-      ) : (
-        <div style={{ marginBottom: '20px' }}>
-          <Link 
-            to="/login"
-            style={{
-              display: 'block',
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              color: '#EFE7DD',
-              textAlign: 'center',
-              padding: '10px',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              marginBottom: '8px'
-            }}
-          >
-            🔐 Admin Login
-          </Link>
-        </div>
-      )}
-      
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-        <Link to="/" style={linkStyle}>🏠 Home / Search</Link>
-        
-        {user && user.role === 'admin' && (
-          <Link to="/upload" style={{...linkStyle, fontWeight: 'bold'}}>📤 Upload New File</Link>
         )}
-        
-        <Link to="/about" style={linkStyle}>📖 About the Project</Link>
-        <Link to="/contact" style={linkStyle}>✉️ Contact Us</Link>
-        
-        <hr style={{ borderColor: 'rgba(172, 163, 126, 0.5)', width: '100%', margin: '15px 0' }} />
-        
-        <h3 style={headerStyle}>COLLECTIONS</h3>
-        <Link to="/category/Portrait" style={linkStyle}>👤 Portrait</Link>
-        <Link to="/category/News" style={linkStyle}>📰 News & Clippings</Link>
-        
-        <h3 style={headerStyle}>NEWS ABOUT VITAL RECORDS</h3>
-        <Link to="/type/Birth" style={linkStyle}>🍼 News about Births (DOB)</Link>
-        <Link to="/type/Marriage" style={linkStyle}>💍 News about Marriages</Link>
-        <Link to="/type/Death" style={linkStyle}>⚰️ News about Deaths (DOD)</Link>
-      </nav>
-
-      <div style={{ marginTop: '30px' }}>
-        <h3 style={headerStyle}>SURNAME INDEX</h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(5, 1fr)', 
-          gap: '8px',
-          marginTop: '12px'
-        }}>
-          {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => (
-            <Link 
-              key={l} 
-              to={'/?letter=' + l}
-              style={{ 
-                color: '#EFE7DD', 
-                textDecoration: 'none', 
-                fontSize: '0.85rem',
-                textAlign: 'center',
-                padding: '5px',
-                borderRadius: '4px',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                transition: 'all 0.2s'
-              }}
-            >
-              {l}
-            </Link>
-          ))}
-        </div>
       </div>
 
-      <div style={{ marginTop: 'auto', paddingTop: '15px', paddingBottom: '20px' }}>
-        <a
-          href="https://paypal.me/yourusername"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'block',
-            backgroundColor: '#0070ba',
-            color: 'white',
-            textAlign: 'center',
-            padding: '10px',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontWeight: 'bold'
-          }}
-        >
-          ❤️ Support the Archive
-        </a>
-      </div>
-    </div>
-  );
-};
-
-export default Sidebar;
+      {/* rest of your sidebar stays exactly the same... */}
