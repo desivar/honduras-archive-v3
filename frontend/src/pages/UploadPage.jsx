@@ -25,7 +25,7 @@ const UploadPage = () => {
     formData.append('names', JSON.stringify(names.split(',').map(n => n.trim())));
     formData.append('countryOfOrigin', countryOfOrigin);
     formData.append('category', category);
-    formData.append('dateOfPublication', eventDate);
+    formData.append('eventDate', eventDate);
     formData.append('location', location);
     formData.append('newspaperName', newspaperName);
     formData.append('pageNumber', pageNumber);
