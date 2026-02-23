@@ -10,6 +10,7 @@ import Login from './pages/LoginPage';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
 import AdminPanel from './pages/AdminPanel';
+import EditPage from './pages/EditPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -85,6 +86,7 @@ function App() {
             <Route path="/" element={<SearchPage />} />
             <Route path="/record/:id" element={<RecordDetail />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/edit/:id" element={user && user.role === 'admin' ? <EditPage /> : <Navigate to="/login" replace />} />
             
             {/* Auth Routes */}
             <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} />
