@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import profilePhoto from '/src/assets/profile.jpg';
 
 const About = () => {
+  const navigate = useNavigate();
   return (
     <div style={{
       padding: '40px',
@@ -140,30 +142,40 @@ const About = () => {
           📰 What You Can Find Here
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-          {[
-            { icon: '👤', label: 'Portraits' },
-            { icon: '📰', label: 'News & Clippings' },
-            { icon: '🍼', label: 'Birth Announcements' },
-            { icon: '💍', label: 'Marriage Records' },
-            { icon: '⚰️', label: 'Death Notices' },
-            { icon: '🌎', label: 'International Records' },
-          ].map((item, i) => (
-            <div key={i} style={{
-              backgroundColor: '#EFE7DD',
-              borderRadius: '6px',
-              padding: '12px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              color: '#444',
-              fontSize: '0.95rem'
-            }}>
-              <span>{item.icon}</span> {item.label}
-            </div>
-          ))}
-        </div>
-      </div>
-
+          
+            {[
+    { icon: '👤', label: 'Portraits', value: 'Portrait' }, // Add the 'value' field
+    { icon: '📰', label: 'News & Clippings', value: 'News' },
+    { icon: '🍼', label: 'Birth Announcements', value: 'Birth' },
+    { icon: '💍', label: 'Marriage Records', value: 'Marriage' },
+    { icon: '⚰️', label: 'Death Notices', value: 'Death' },
+    { icon: '🌎', label: 'International Records', value: 'International' },
+  ].map((item, i) => (
+    <div 
+      key={i} 
+      onClick={() => navigate(`/category/${item.value}`)} // 3. This makes it work!
+      style={{
+        cursor: 'pointer', // Makes it look clickable
+        backgroundColor: '#EFE7DD',
+        borderRadius: '6px',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        color: '#444',
+        fontSize: '0.95rem',
+        transition: 'transform 0.2s'
+      }}
+      onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+      onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      <span>{item.icon}</span> {item.label}
+    </div>
+    
+  ))}
+  </div>
+    
+</div>
       {/* Footer note */}
       <div style={{
         textAlign: 'center',
@@ -177,7 +189,6 @@ const About = () => {
           All newspaper images are used for historical and genealogical research purposes.
         </p>
       </div>
-
     </div>
   );
 };
