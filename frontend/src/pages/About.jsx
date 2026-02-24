@@ -78,59 +78,53 @@ const About = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         borderLeft: '5px solid #ACA37E'
       }}>
-      {/* Header Area */}
-  <div style={{ 
-    display: 'flex', 
-    alignItems: 'flex-start', // Align title to the top of the photo
-    gap: '25px', 
-    marginBottom: '20px' 
-  }}>
-    <img 
-      src={profilePhoto} 
-      alt="Creator portrait"
-      style={{
-        width: '140px',
-        height: '140px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-        border: '4px solid #737958',
-        flexShrink: 0,
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-      }}
-    />
-    <div>
-      <h2 style={{ 
-        color: '#737958', 
-        margin: '10px 0 10px 0', 
-        fontSize: '1.6rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px'
-      }}>
-        <span style={{ fontSize: '1.2rem' }}>👤</span> About the Creator
-      </h2>
-      <p style={{ 
-        color: '#444', 
-        lineHeight: 1.6, 
-        fontSize: '1.05rem', 
-        margin: 0,
-        maxWidth: '600px' // Keeps the bio from stretching too wide
-      }}></p>
+        {/* Profile Header Area */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'flex-start', 
+          gap: '25px', 
+          marginBottom: '30px' 
+        }}>
+          <img 
+            src={profilePhoto} 
+            alt="Creator portrait"
+            style={{
+              width: '140px',
+              height: '140px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '4px solid #737958',
+              flexShrink: 0,
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+            }}
+          />
+          <div>
+            <h2 style={{ 
+              color: '#737958', 
+              margin: '0 0 15px 0', 
+              fontSize: '1.6rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <span style={{ fontSize: '1.2rem' }}>👤</span> About the Creator
+            </h2>
+            <p style={{ color: '#444', lineHeight: 1.8, fontSize: '1.05rem', margin: 0 }}>
+              I am a Software Engineer and passionate genealogical researcher with deep roots in Honduran history. 
+              I built this archive to bridge the gap between technology and historical preservation.
+            </p>
+          </div>
+        </div>
 
-        <p style={{ color: '#444', lineHeight: 1.8, fontSize: '1.05rem', marginBottom: '20px' }}>
-          I am a Software Engineer and passionate genealogical researcher with deep roots in Honduran history. 
-          I built this archive to bridge the gap between technology and historical preservation.
-        </p>
-
-        {/* Credentials */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+        {/* Credentials Grid - Outside the Flexbox for full width */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px' }}>
           {[
             { icon: '🎓', title: 'B.S. Software Development', sub: 'BYU-Idaho' },
             { icon: '🌳', title: 'FamilySearch Volunteer', sub: 'Since 2009' },
             { icon: '📋', title: 'Certified Record Management', sub: 'RMU Certification' },
             { icon: '🔍', title: 'Family History Research', sub: 'Certified Researcher' },
-            { icon: '📜', title: 'Advanced Family History Research Certificate', sub: 'In progress — completing August 2026' },
-            { icon: '🏛️', title: 'Associate Degree in Family  History Research ', sub: 'In progress -completing in August 2026' },
+            { icon: '📜', title: 'Advanced Research Certificate', sub: 'In progress — Aug 2026' },
+            { icon: '🏛️', title: 'Associate Degree', sub: 'Family History Research — Aug 2026' },
           ].map((item, i) => (
             <div key={i} style={{
               backgroundColor: '#EFE7DD',
@@ -163,47 +157,52 @@ const About = () => {
           📰 What You Can Find Here
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-          
-            {[
-    { icon: '👤', label: 'Portraits', value: 'Portrait' }, // Add the 'value' field
-    { icon: '📰', label: 'News & Clippings', value: 'News' },
-    { icon: '🍼', label: 'Birth Announcements', value: 'Birth' },
-    { icon: '💍', label: 'Marriage Records', value: 'Marriage' },
-    { icon: '⚰️', label: 'Death Notices', value: 'Death' },
-    { icon: '🌎', label: 'International Records', value: 'International' },
-  ].map((item, i) => (
-    <div 
-      key={i} 
-      onClick={() => navigate(`/category/${item.value}`)} // 3. This makes it work!
-      style={{
-        cursor: 'pointer', // Makes it look clickable
-        backgroundColor: '#EFE7DD',
-        borderRadius: '6px',
-        padding: '12px 16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        color: '#444',
-        fontSize: '0.95rem',
-        transition: 'transform 0.2s'
-      }}
-      onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-      onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-    >
-      <span>{item.icon}</span> {item.label}
-    </div>
-    
-  ))}
-  </div>
-    
-</div>
+          {[
+            { icon: '👤', label: 'Portraits', value: 'Portrait' },
+            { icon: '📰', label: 'News & Clippings', value: 'News' },
+            { icon: '🍼', label: 'Birth Announcements', value: 'Birth' },
+            { icon: '💍', label: 'Marriage Records', value: 'Marriage' },
+            { icon: '⚰️', label: 'Death Notices', value: 'Death' },
+            { icon: '🌎', label: 'International Records', value: 'International' },
+          ].map((item, i) => (
+            <div 
+              key={i} 
+              onClick={() => navigate(`/category/${item.value}`)} 
+              style={{
+                cursor: 'pointer',
+                backgroundColor: '#EFE7DD',
+                borderRadius: '6px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: '#444',
+                fontSize: '0.95rem',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.backgroundColor = '#e8dec9';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.backgroundColor = '#EFE7DD';
+              }}
+            >
+              <span>{item.icon}</span> {item.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Footer note */}
       <div style={{
         textAlign: 'center',
         padding: '20px',
         color: '#888',
         fontSize: '0.9rem',
-        borderTop: '1px solid #ACA37E'
+        borderTop: '1px solid #ACA37E',
+        marginTop: '20px'
       }}>
         <p style={{ margin: 0 }}>
           This is a non-commercial project dedicated to the preservation of Honduran historical records. <br />
