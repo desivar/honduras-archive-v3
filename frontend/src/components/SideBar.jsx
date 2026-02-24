@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from './LanguageToggle';
 
-const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {  // 👈 add lastUpdate prop
+
+const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
