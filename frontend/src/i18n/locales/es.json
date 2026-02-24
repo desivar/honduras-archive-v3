@@ -1,0 +1,38 @@
+{
+  "sidebar": {
+    "title": "Archivo de Periodicos",
+    "magnitude": "Magnitud",
+    "records": "Registros",
+    "lastUpdate": "Última Actualización",
+    "loggedAs": "Conectado como",
+    "logout": "Cerrar Sesión",
+    "login": "Acceso Admin",
+    "home": "Inicio / Búsqueda",
+    "upload": "Subir Nuevo Archivo",
+    "about": "Sobre el Proyecto",
+    "contact": "Contáctenos",
+    "collections": "Colecciones",
+    "portrait": "Retratos",
+    "news": "Noticias y Recortes",
+    "vitalRecords": "Noticias de Registros Vitales",
+    "births": "Noticias de Nacimientos",
+    "marriages": "Noticias de Matrimonios",
+    "deaths": "Noticias de Defunciones",
+    "surnameIndex": "Índice de Apellidos",
+    "support": "Apoya el Archivo"
+  },
+  "search": {
+    "placeholder": "Buscar por nombre, lugar o resumen...",
+    "button": "Buscar"
+  },
+  "record": {
+    "category": "Categoría",
+    "date": "Fecha",
+    "source": "Fuente",
+    "location": "Lugar",
+    "citation": "Copiar Cita APA",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "noRecords": "No se encontraron registros en esta sección."
+  }
+}
