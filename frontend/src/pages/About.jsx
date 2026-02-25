@@ -78,7 +78,6 @@ const About = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         borderLeft: '5px solid #ACA37E'
       }}>
-        {/* Profile Header Area */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'flex-start', 
@@ -115,65 +114,16 @@ const About = () => {
             </p>
           </div>
         </div>
-        {/* Professional Connect Section */}
-<div style={{
-  marginTop: '30px',
-  paddingTop: '20px',
-  borderTop: '1px solid #EFE7DD',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '15px'
-}}>
-  <p style={{ margin: 0, fontWeight: 'bold', color: '#737958' }}>Connect with me professionally:</p>
-  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-    {[
-      { label: 'LinkedIn', icon: '🔗', url: 'https://linkedin.com/in/your-profile', color: '#0077b5' },
-      { label: 'GitHub', icon: '💻', url: 'https://github.com/your-username', color: '#333' },
-      { label: 'X (Twitter)', icon: '🐦', url: 'https://x.com/your-handle', color: '#000' },
-      { label: 'Email', icon: '✉️', url: 'mailto:engineer.yourname@email.com', color: '#737958' }
-    ].map((social, i) => (
-      <a 
-        key={i}
-        href={social.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          textDecoration: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          border: `1px solid ${social.color}`,
-          color: social.color,
-          fontSize: '0.9rem',
-          fontWeight: '500',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = social.color;
-          e.currentTarget.style.color = 'white';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.style.color = social.color;
-        }}
-      >
-        <span>{social.icon}</span> {social.label}
-      </a>
-    ))}
-  </div>
-</div>
 
-        {/* Credentials Grid - Outside the Flexbox for full width */}
+        {/* Credentials Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px' }}>
           {[
             { icon: '🎓', title: 'B.S. Software Development', sub: 'BYU-Idaho' },
             { icon: '🌳', title: 'FamilySearch Volunteer', sub: 'Since 2009' },
             { icon: '📋', title: 'Certified Record Management', sub: 'RMU Certification' },
             { icon: '🔍', title: 'Family History Research', sub: 'Certified Researcher' },
-            { icon: '📜', title: 'Advanced  Family History Research Certificate', sub: 'In progress — Aug 2026' },
-            { icon: '🏛️', title: 'Associate Degree in Family History Research', sub: 'In progress— Aug 2026' },
+            { icon: '📜', title: 'Advanced Family History Research', sub: 'Certificate (In progress)' },
+            { icon: '🏛️', title: 'Associate Degree', sub: 'Family History Research (In progress)' },
           ].map((item, i) => (
             <div key={i} style={{
               backgroundColor: '#EFE7DD',
@@ -189,6 +139,59 @@ const About = () => {
                 <p style={{ margin: 0, color: '#666', fontSize: '0.85rem' }}>{item.sub}</p>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Professional Connect Section - Moved outside for better hierarchy */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        padding: '25px 30px',
+        marginBottom: '30px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        borderLeft: '5px solid #737958',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '15px'
+      }}>
+        <p style={{ margin: 0, fontWeight: 'bold', color: '#737958' }}>Connect with me professionally:</p>
+        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+          {[
+            { label: 'LinkedIn', icon: '🔗', url: 'https://linkedin.com/in/your-profile', color: '#0077b5' },
+            { label: 'GitHub', icon: '💻', url: 'https://github.com/your-username', color: '#333' },
+            { label: 'X (Twitter)', icon: '🐦', url: 'https://x.com/your-handle', color: '#000' },
+            { label: 'Email', icon: '✉️', url: 'mailto:SE.Desire@email.com', color: '#737958' }
+          ].map((social, i) => (
+            <a 
+              key={i}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: `1px solid ${social.color}`,
+                color: social.color,
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = social.color;
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = social.color;
+              }}
+            >
+              <span>{social.icon}</span> {social.label}
+            </a>
           ))}
         </div>
       </div>
