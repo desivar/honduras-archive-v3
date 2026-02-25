@@ -68,15 +68,20 @@ app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
   res.send('Honduras Archive API');
 });
-// 👇 Add this
-app.get('/api/archive/:id', async (req, res) => {
-  try {
-    const item = await Archive.findById(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Not found' });
-    res.json(item);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+// Backend snippet (Express)
+app.get('/api/archive', async (req, res) => {
+  const { category, letter } = req.query; // This captures the ?category= value
+  let filter = {};
+
+  if (category) {
+    filter.category = category; // Tells MongoDB: "Find ONLY this category"
   }
+  if (letter) {
+    filter.fullName = { $regex: `^${letter}`, $options: 'i' };
+  }
+
+  const items = await Archive.find(filter); // Uses the filter
+  res.json({ items });
 });
 
 // Upload
