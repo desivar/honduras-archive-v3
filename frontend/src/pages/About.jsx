@@ -115,6 +115,55 @@ const About = () => {
             </p>
           </div>
         </div>
+        {/* Professional Connect Section */}
+<div style={{
+  marginTop: '30px',
+  paddingTop: '20px',
+  borderTop: '1px solid #EFE7DD',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '15px'
+}}>
+  <p style={{ margin: 0, fontWeight: 'bold', color: '#737958' }}>Connect with me professionally:</p>
+  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+    {[
+      { label: 'LinkedIn', icon: '🔗', url: 'https://linkedin.com/in/your-profile', color: '#0077b5' },
+      { label: 'GitHub', icon: '💻', url: 'https://github.com/your-username', color: '#333' },
+      { label: 'X (Twitter)', icon: '🐦', url: 'https://x.com/your-handle', color: '#000' },
+      { label: 'Email', icon: '✉️', url: 'mailto:engineer.yourname@email.com', color: '#737958' }
+    ].map((social, i) => (
+      <a 
+        key={i}
+        href={social.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          border: `1px solid ${social.color}`,
+          color: social.color,
+          fontSize: '0.9rem',
+          fontWeight: '500',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = social.color;
+          e.currentTarget.style.color = 'white';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = social.color;
+        }}
+      >
+        <span>{social.icon}</span> {social.label}
+      </a>
+    ))}
+  </div>
+</div>
 
         {/* Credentials Grid - Outside the Flexbox for full width */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '15px' }}>
