@@ -44,17 +44,17 @@ const connectDB = async () => {
 };
 connectDB();
 
-// 🟢 UPDATED Archive Schema (Added Names and FullText)
+// Archive Schema
 const archiveSchema = new mongoose.Schema({
   title: String,
-  names: [String],      // 👈 Allows multiple people: ["Juan", "Maria"]
+  names: [String],
   summary: String,
-  fullText: String,     // 👈 For those large news articles
+  fullText: String,
   category: String,
   location: String,
   eventDate: String,
-  newspaperName: String, 
-  countryOfOrigin: String, // 👈 Add this for international records
+  newspaperName: String,
+  countryOfOrigin: String,
   pageNumber: String,
   imageUrl: String,
   cloudinaryId: String,
@@ -68,21 +68,24 @@ app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
   res.send('Honduras Archive API');
 });
-// Backend snippet (Express)
+
+// ── GET all records (with search / letter / category) ────────────────────────
 app.get('/api/archive', async (req, res) => {
   try {
-    const { search, letter, category } = req.query; // 👈 add category
+    const { search, letter, category } = req.query;
     let query = {};
 
     if (search) {
-      query = { $or: [
-        { names: { $regex: search, $options: 'i' } },
-        { countryOfOrigin: { $regex: search, $options: 'i' } },
-        { summary: { $regex: search, $options: 'i' } }
-      ]};
+      query = {
+        $or: [
+          { names: { $regex: search, $options: 'i' } },
+          { countryOfOrigin: { $regex: search, $options: 'i' } },
+          { summary: { $regex: search, $options: 'i' } }
+        ]
+      };
     } else if (letter && letter !== 'null') {
       query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
-    } else if (category) { // 👈 add this
+    } else if (category) {
       query = { category: category };
     }
 
@@ -96,10 +99,21 @@ app.get('/api/archive', async (req, res) => {
   }
 });
 
-// Upload
+// ── GET single record by ID ───────────────────────────────────────────────────
+// 🟢 THIS WAS MISSING — this is what caused "error loading record" in EditPage
+app.get('/api/archive/:id', async (req, res) => {
+  try {
+    const item = await Archive.findById(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Record not found' });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ── POST upload new record ────────────────────────────────────────────────────
 app.post('/api/archive', upload.single('image'), async (req, res) => {
   try {
-    // We handle names as an array (frontend should send it as a JSON string if using FormData)
     let namesArray = req.body.names;
     if (typeof namesArray === 'string') namesArray = JSON.parse(namesArray);
 
@@ -109,7 +123,7 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
       imageUrl: req.file ? req.file.path : null,
       cloudinaryId: req.file ? req.file.filename : null
     });
-    
+
     await item.save();
     res.status(201).json(item);
   } catch (error) {
@@ -117,84 +131,40 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
   }
 });
 
-// 🟢 NEW: Update (Edit) Route
+// ── PUT update record ─────────────────────────────────────────────────────────
 app.put('/api/archive/:id', async (req, res) => {
   try {
-    // We add the new fields here so the 'Edit' button can save them
-    const { 
-      title, names, fullText, category, 
-      location, eventDate, newspaperName, pageNumber, summary, countryOfOrigin 
-    } = req.body; 
+    const {
+      title, names, fullText, category,
+      location, eventDate, newspaperName, pageNumber, summary, countryOfOrigin
+    } = req.body;
 
     let namesArray = names;
     if (typeof namesArray === 'string') namesArray = JSON.parse(namesArray);
 
     const updatedItem = await Archive.findByIdAndUpdate(
       req.params.id,
-      { 
-        title, 
-        names: namesArray, 
-      
-        fullText, 
-        category, 
-        location, 
-        eventDate,
-        newspaperName, // 👈 This makes it work!
-        pageNumber,    // 👈 This makes it work!
-        summary,  // 👈 This makes it work!
-        countryOfOrigin,
-      },
+      { title, names: namesArray, fullText, category, location, eventDate, newspaperName, pageNumber, summary, countryOfOrigin },
       { new: true }
     );
+
+    if (!updatedItem) return res.status(404).json({ error: 'Record not found' });
     res.json(updatedItem);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-// Get all (Updated search logic)
-app.get('/api/archive', async (req, res) => {
-  try {
-    const { search, letter } = req.query;
-    let query = {};
 
-
-
-    // Search logic
-    if (search) {
-query = { $or: [
-{ names: { $regex: search, $options: 'i' } },
-{ countryOfOrigin: { $regex: search, $options: 'i' } },
-{ summary: { $regex: search, $options: 'i' } }
-]};
-} else if (letter && letter !== 'null') {
-query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
-}
-
-const items = await Archive.find(query).sort({ createdAt: -1 });
-const totalCount = await Archive.countDocuments();
-const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
-
-res.json({
-items,
-totalCount,
-lastUpdate: lastRecord ? lastRecord.createdAt : null
-});
-} catch (error) {
-res.status(500).json({ error: error.message });
-}
-});
-
-
-// Delete
+// ── DELETE record ─────────────────────────────────────────────────────────────
 app.delete('/api/archive/:id', async (req, res) => {
   try {
     const item = await Archive.findById(req.params.id);
     if (!item) return res.status(404).json({ error: 'Not found' });
-    
+
     if (item.cloudinaryId) {
       await cloudinary.uploader.destroy(item.cloudinaryId);
     }
-    
+
     await item.deleteOne();
     res.json({ message: 'Deleted successfully' });
   } catch (error) {
