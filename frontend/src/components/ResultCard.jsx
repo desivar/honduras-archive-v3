@@ -47,6 +47,7 @@ alert("APA Citation copied to clipboard!");
      <img 
       src={record.imageUrl} 
       alt={displayName} 
+      loading="lazy"
       style={{ 
            width: '100%', 
             borderRadius: '4px', 
