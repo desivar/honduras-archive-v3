@@ -70,18 +70,30 @@ app.get('/', (req, res) => {
 });
 // Backend snippet (Express)
 app.get('/api/archive', async (req, res) => {
-  const { category, letter } = req.query; // This captures the ?category= value
-  let filter = {};
+  try {
+    const { search, letter, category } = req.query; // 👈 add category
+    let query = {};
 
-  if (category) {
-    filter.category = category; // Tells MongoDB: "Find ONLY this category"
-  }
-  if (letter) {
-    filter.fullName = { $regex: `^${letter}`, $options: 'i' };
-  }
+    if (search) {
+      query = { $or: [
+        { names: { $regex: search, $options: 'i' } },
+        { countryOfOrigin: { $regex: search, $options: 'i' } },
+        { summary: { $regex: search, $options: 'i' } }
+      ]};
+    } else if (letter && letter !== 'null') {
+      query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
+    } else if (category) { // 👈 add this
+      query = { category: category };
+    }
 
-  const items = await Archive.find(filter); // Uses the filter
-  res.json({ items });
+    const items = await Archive.find(query).sort({ createdAt: -1 });
+    const totalCount = await Archive.countDocuments();
+    const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
+
+    res.json({ items, totalCount, lastUpdate: lastRecord ? lastRecord.createdAt : null });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Upload
