@@ -168,8 +168,14 @@ const EditPage = () => {
             </div>
             <div>
               <label style={labelStyle}>People Involved (separate with commas):</label>
-              <input type="text" value={peopleInvolved} onChange={(e) => setPeopleInvolved(e.target.value)}
-                placeholder="e.g. Francisco Morazán" style={inputStyle} />
+              <textarea
+                value={peopleInvolved}
+                onChange={(e) => setPeopleInvolved(e.target.value)}
+                placeholder="e.g. Francisco Morazán, José Cecilio del Valle..."
+                rows="3"
+                style={{ ...inputStyle, resize: 'vertical' }}
+              />
+              <p style={hintStyle}>Separate each name with a comma</p>
             </div>
           </div>
         )}
