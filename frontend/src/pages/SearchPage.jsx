@@ -70,7 +70,7 @@ const SearchPage = () => {
       ) : results.length > 0 ? (
         <ResultList
           records={results}
-          pageSize={10}
+          pageSize={20}
           onDeleteSuccess={fetchAllRecords}
         />
       ) : (
