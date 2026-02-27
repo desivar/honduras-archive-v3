@@ -1,16 +1,67 @@
 # React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🇭🇳 Recuerdos de Honduras
 
-Currently, two official plugins are available:
+> A digital archive preserving Honduran historical records — for genealogy researchers, historians, academics, and the Honduran diaspora worldwide.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 📖 About the Project
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Recuerdos de Honduras** is an open digital archive dedicated to preserving and making accessible historical records from Honduras. From newspaper clippings and portraits to birth, marriage, and death records, the archive brings together primary sources that document the lives of people and the events that shaped Honduran history.
 
-## Expanding the ESLint configuration
+Whether you are tracing your family roots, conducting academic research, or simply exploring Honduras's rich past, Recuerdos de Honduras provides a searchable, citable, and growing collection of digitized historical materials.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✨ Features
+
+- 🔍 **Full-text search** — Search records by name, country of origin, summary, event name, or people involved
+- 📂 **Collections** — Browse records organized by category: Portraits, News & Clippings, Births, Marriages, Deaths, and Historic Events
+- 🏛️ **Historic Events** — A dedicated collection for significant historical events, with support for event names, dates, locations, and people involved
+- 🔤 **Surname Index** — Browse all records alphabetically by surname
+- 📅 **Dual date fields** — Each record tracks both the *date of the event* and the *date of publication*, critical for archival accuracy
+- 📄 **APA Citation generator** — Instantly copy a properly formatted APA citation for any record
+- 🖼️ **Image support** — High-quality document and photograph uploads via Cloudinary
+- 🌐 **Multilingual interface** — English and Spanish support via i18n
+- 🔐 **Admin panel** — Secure admin login for uploading, editing, and deleting records
+- 📃 **Pagination** — Smooth browsing across large collections
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| React | UI framework |
+| React Router | Client-side navigation |
+| Axios | API communication |
+| i18next | Internationalization (EN/ES) |
+
+### Backend
+| Technology | Purpose |
+|---|---|
+| Node.js + Express | REST API server |
+| MongoDB + Mongoose | Database and schema modeling |
+| Cloudinary | Image storage and delivery |
+| Multer | Multipart file upload handling |
+| JSON Web Tokens (JWT) | Admin authentication |
+
+### Hosting
+| Service | Purpose |
+|---|---|
+| Render | Backend deployment |
+| Render (Static) | Frontend deployment |
+| MongoDB Atlas | Cloud database |
+| Cloudinary | Media storage |
+
+---
+
+## 📬 Contact
+
+For questions, contributions, or to report missing records, please use the contact form available within the application.
+
+---
+
+> *Preserving the memory of Honduras, one record at a time.*
