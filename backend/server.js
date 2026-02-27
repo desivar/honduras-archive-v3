@@ -79,7 +79,19 @@ app.get('/api/archive', async (req, res) => {
     const { search, letter, category } = req.query;
     let query = {};
 
-    if (search) {
+    if (search && category) {
+      // Both search term AND category filter
+      query = {
+        category,
+        $or: [
+          { names: { $regex: search, $options: 'i' } },
+          { countryOfOrigin: { $regex: search, $options: 'i' } },
+          { summary: { $regex: search, $options: 'i' } },
+          { eventName: { $regex: search, $options: 'i' } },
+          { peopleInvolved: { $regex: search, $options: 'i' } },
+        ]
+      };
+    } else if (search) {
       query = {
         $or: [
           { names: { $regex: search, $options: 'i' } },
