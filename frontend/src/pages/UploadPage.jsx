@@ -9,6 +9,7 @@ const UploadPage = () => {
   // Shared fields
   const [category, setCategory] = useState('Portrait');
   const [eventDate, setEventDate] = useState('');
+  const [publicationDate, setPublicationDate] = useState(''); // 🟢 NEW
   const [location, setLocation] = useState('');
   const [newspaperName, setNewspaperName] = useState('');
   const [pageNumber, setPageNumber] = useState('');
@@ -32,6 +33,7 @@ const UploadPage = () => {
     const formData = new FormData();
     formData.append('category', category);
     formData.append('eventDate', eventDate);
+    formData.append('publicationDate', publicationDate); // 🟢
     formData.append('location', location);
     formData.append('newspaperName', newspaperName);
     formData.append('pageNumber', pageNumber);
@@ -40,16 +42,14 @@ const UploadPage = () => {
 
     if (isHistoricEvent) {
       formData.append('eventName', eventName);
-      formData.append(
-        'peopleInvolved',
-        JSON.stringify(peopleInvolved.split(',').map(n => n.trim()).filter(Boolean))
-      );
-      formData.append('names', JSON.stringify([])); // keep schema happy
+      formData.append('peopleInvolved', JSON.stringify(
+        peopleInvolved.split(',').map(n => n.trim()).filter(Boolean)
+      ));
+      formData.append('names', JSON.stringify([]));
     } else {
-      formData.append(
-        'names',
-        JSON.stringify(names.split(',').map(n => n.trim()).filter(Boolean))
-      );
+      formData.append('names', JSON.stringify(
+        names.split(',').map(n => n.trim()).filter(Boolean)
+      ));
       formData.append('countryOfOrigin', countryOfOrigin);
       formData.append('peopleInvolved', JSON.stringify([]));
     }
@@ -84,7 +84,7 @@ const UploadPage = () => {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* ── Category (controls which fields appear) ── */}
+        {/* Category */}
         <div>
           <label style={labelStyle}>Category:</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle}>
@@ -97,7 +97,7 @@ const UploadPage = () => {
           </select>
         </div>
 
-        {/* ── HISTORIC EVENT fields ── */}
+        {/* Historic Event fields */}
         {isHistoricEvent && (
           <div style={{
             backgroundColor: '#f7f5ef', border: '2px solid #ACA37E',
@@ -107,24 +107,19 @@ const UploadPage = () => {
             <p style={{ margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.95rem' }}>
               🏛️ Historic Event Details
             </p>
-
             <div>
               <label style={labelStyle}>Event Name: *</label>
               <input
-                type="text"
-                value={eventName}
+                type="text" value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
-                required
-                placeholder="e.g. Battle of La Trinidad"
+                required placeholder="e.g. Battle of La Trinidad"
                 style={inputStyle}
               />
             </div>
-
             <div>
               <label style={labelStyle}>People Involved (separate with commas):</label>
               <input
-                type="text"
-                value={peopleInvolved}
+                type="text" value={peopleInvolved}
                 onChange={(e) => setPeopleInvolved(e.target.value)}
                 placeholder="e.g. Francisco Morazán, José Cecilio del Valle"
                 style={inputStyle}
@@ -133,25 +128,22 @@ const UploadPage = () => {
           </div>
         )}
 
-        {/* ── PERSON record fields ── */}
+        {/* Person fields */}
         {!isHistoricEvent && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={labelStyle}>Names (separate with commas): *</label>
               <input
-                type="text"
-                value={names}
+                type="text" value={names}
                 onChange={(e) => setNames(e.target.value)}
-                required
-                placeholder="e.g. Sara Gravina, Carlos Izaguirre"
+                required placeholder="e.g. Sara Gravina, Carlos Izaguirre"
                 style={inputStyle}
               />
             </div>
             <div>
               <label style={labelStyle}>Person's Origin:</label>
               <input
-                type="text"
-                value={countryOfOrigin}
+                type="text" value={countryOfOrigin}
                 onChange={(e) => setCountryOfOrigin(e.target.value)}
                 placeholder="e.g. Italy"
                 style={inputStyle}
@@ -160,35 +152,56 @@ const UploadPage = () => {
           </div>
         )}
 
-        {/* ── Shared fields ── */}
-        <div>
-          <label style={labelStyle}>Date:</label>
-          <input
-            type="text"
-            value={eventDate}
-            onChange={(e) => setEventDate(e.target.value)}
-            placeholder="e.g. 5 de Enero 1830"
-            style={inputStyle}
-          />
+        {/* 🟢 Dual date fields — shown for ALL categories */}
+        <div style={{
+          backgroundColor: '#f7f5ef', border: '1px solid #ACA37E',
+          borderRadius: '8px', padding: '14px',
+          display: 'flex', flexDirection: 'column', gap: '12px'
+        }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#737958', fontWeight: 'bold', textTransform: 'uppercase' }}>
+            📅 Dates
+          </p>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Date of Event:</label>
+              <input
+                type="text" value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+                placeholder="e.g. 5 de Enero 1827"
+                style={inputStyle}
+              />
+              <p style={hintStyle}>When it actually happened</p>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Date of Publication:</label>
+              <input
+                type="text" value={publicationDate}
+                onChange={(e) => setPublicationDate(e.target.value)}
+                placeholder="e.g. 12 de Marzo 1930"
+                style={inputStyle}
+              />
+              <p style={hintStyle}>When it appeared in the source</p>
+            </div>
+          </div>
         </div>
 
+        {/* Location */}
         <div>
           <label style={labelStyle}>Location / Place:</label>
           <input
-            type="text"
-            value={location}
+            type="text" value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="e.g. Tegucigalpa, Francisco Morazán"
             style={inputStyle}
           />
         </div>
 
+        {/* Source */}
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 2 }}>
             <label style={labelStyle}>Newspaper / Source:</label>
             <input
-              type="text"
-              value={newspaperName}
+              type="text" value={newspaperName}
               onChange={(e) => setNewspaperName(e.target.value)}
               placeholder="e.g. El Cronista"
               style={inputStyle}
@@ -197,8 +210,7 @@ const UploadPage = () => {
           <div style={{ flex: 1 }}>
             <label style={labelStyle}>Page:</label>
             <input
-              type="text"
-              value={pageNumber}
+              type="text" value={pageNumber}
               onChange={(e) => setPageNumber(e.target.value)}
               placeholder="e.g. 5"
               style={inputStyle}
@@ -206,40 +218,34 @@ const UploadPage = () => {
           </div>
         </div>
 
+        {/* Summary */}
         <div>
           <label style={labelStyle}>Description / Summary:</label>
           <textarea
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+            value={summary} onChange={(e) => setSummary(e.target.value)}
             rows="4"
             placeholder={isHistoricEvent ? 'Describe what happened during this event...' : 'Summary of the record...'}
             style={inputStyle}
           />
         </div>
 
+        {/* Image */}
         <div>
           <label style={labelStyle}>Upload Image:</label>
           <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            accept="image/*"
-            style={inputStyle}
+            type="file" onChange={(e) => setImage(e.target.files[0])}
+            accept="image/*" style={inputStyle}
           />
         </div>
 
         <button
-          type="submit"
-          disabled={loading}
+          type="submit" disabled={loading}
           style={{
             padding: '15px',
             backgroundColor: loading ? '#aaa' : '#737958',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
+            color: 'white', border: 'none', borderRadius: '6px',
             cursor: loading ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            fontSize: '1rem',
-            marginTop: '4px'
+            fontWeight: 'bold', fontSize: '1rem', marginTop: '4px'
           }}
         >
           {loading ? 'Uploading...' : '💾 Save to Archive'}
@@ -250,20 +256,18 @@ const UploadPage = () => {
 };
 
 const labelStyle = {
-  display: 'block',
-  marginBottom: '4px',
-  fontWeight: 'bold',
-  fontSize: '0.9rem',
-  color: '#444'
+  display: 'block', marginBottom: '4px',
+  fontWeight: 'bold', fontSize: '0.9rem', color: '#444'
 };
 
 const inputStyle = {
-  padding: '10px',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-  fontSize: '1rem',
-  width: '100%',
-  boxSizing: 'border-box'
+  padding: '10px', borderRadius: '4px',
+  border: '1px solid #ccc', fontSize: '1rem',
+  width: '100%', boxSizing: 'border-box'
+};
+
+const hintStyle = {
+  margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fontStyle: 'italic'
 };
 
 export default UploadPage;
