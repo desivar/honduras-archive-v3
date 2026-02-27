@@ -211,7 +211,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 // ─── ResultList (paginated wrapper) ──────────────────────────────────────────
 
-export const ResultList = ({ records = [], pageSize = 10, onDeleteSuccess }) => {
+export const ResultList = ({ records = [], pageSize = 20, onDeleteSuccess }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(records.length / pageSize);
   const paginated = records.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -233,9 +233,16 @@ export const ResultList = ({ records = [], pageSize = 10, onDeleteSuccess }) => 
         {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
       </p>
 
-      {paginated.map((record) => (
-        <ResultCard key={record._id} record={record} onDeleteSuccess={handleDelete} />
-      ))}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '20px',
+        marginBottom: '20px'
+      }}>
+        {paginated.map((record) => (
+          <ResultCard key={record._id} record={record} onDeleteSuccess={handleDelete} />
+        ))}
+      </div>
 
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
