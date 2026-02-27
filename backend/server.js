@@ -50,15 +50,16 @@ const archiveSchema = new mongoose.Schema({
   names: [String],
   summary: String,
   fullText: String,
-  category: String,         // now includes 'Historic Event'
+  category: String,
   location: String,
-  eventDate: String,
+  eventDate: String,           // Date the event actually happened
+  publicationDate: String,     // 🟢 NEW: Date the source was published
   newspaperName: String,
   countryOfOrigin: String,
   pageNumber: String,
   imageUrl: String,
   cloudinaryId: String,
-  // 🟢 Historic Event fields
+  // Historic Event fields
   eventName: String,
   peopleInvolved: [String],
   createdAt: { type: Date, default: Date.now }
@@ -150,7 +151,8 @@ app.put('/api/archive/:id', async (req, res) => {
   try {
     const {
       title, names, fullText, category,
-      location, eventDate, newspaperName, pageNumber,
+      location, eventDate, publicationDate, // 🟢 publicationDate added
+      newspaperName, pageNumber,
       summary, countryOfOrigin,
       eventName, peopleInvolved
     } = req.body;
@@ -171,7 +173,8 @@ app.put('/api/archive/:id', async (req, res) => {
       req.params.id,
       {
         title, names: namesArray, fullText, category,
-        location, eventDate, newspaperName, pageNumber,
+        location, eventDate, publicationDate, // 🟢
+        newspaperName, pageNumber,
         summary, countryOfOrigin,
         eventName, peopleInvolved: peopleArray
       },
