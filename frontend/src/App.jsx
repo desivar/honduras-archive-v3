@@ -12,15 +12,15 @@ import Contact from './pages/Contact';
 import AdminPanel from './pages/AdminPanel';
 import EditPage from './pages/EditPage';
 import About from './pages/About';
+import HistoricEventsPage from './pages/HistoricEventsPage'; // 🟢 NEW
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0); // 📊 Added state for Magnitude
-  const [lastUpdate, setLastUpdate] = useState(null); // 👈 add this
+  const [totalCount, setTotalCount] = useState(0);
+  const [lastUpdate, setLastUpdate] = useState(null);
 
   useEffect(() => {
-    // 1. Restore User Session
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -31,12 +31,11 @@ function App() {
       }
     }
 
-    // 2. Fetch Archive Magnitude for Sidebar
     const fetchStats = async () => {
       try {
         const response = await axios.get('https://honduras-archive.onrender.com/api/archive');
         setTotalCount(response.data.totalCount || 0);
-        setLastUpdate(response.data.lastUpdate || null); // 👈 add this
+        setLastUpdate(response.data.lastUpdate || null);
       } catch (err) {
         console.error("Error fetching stats:", err);
       } finally {
@@ -72,41 +71,38 @@ function App() {
   return (
     <Router>
       <div style={{ display: 'flex', backgroundColor: '#EFE7DD', minHeight: '100vh' }}>
-        
-        {/* ✅ Sidebar now receives user AND totalCount */}
-      
-<Sidebar user={user} onLogout={handleLogout} totalCount={totalCount} lastUpdate={lastUpdate} />
-        
-        {/* ✅ Main Content Area: MarginLeft matches Sidebar width to prevent overlapping */}
-        <main style={{ 
-          marginLeft: '260px', 
-          flex: 1, 
-          padding: '20px', 
-          width: 'calc(100% - 260px)', 
-          boxSizing: 'border-box' 
+
+        <Sidebar user={user} onLogout={handleLogout} totalCount={totalCount} lastUpdate={lastUpdate} />
+
+        <main style={{
+          marginLeft: '260px',
+          flex: 1,
+          padding: '20px',
+          width: 'calc(100% - 260px)',
+          boxSizing: 'border-box'
         }}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<SearchPage />} />
             <Route path="/record/:id" element={<RecordDetail />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/edit/:id" element={user && user.role === 'admin' ? <EditPage /> : <Navigate to="/login" replace />} />
-            
             <Route path="/about" element={<About />} />
+            <Route path="/edit/:id" element={user && user.role === 'admin' ? <EditPage /> : <Navigate to="/login" replace />} />
 
-             
             {/* Auth Routes */}
             <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
-            
+
             {/* Admin Routes */}
             <Route path="/upload" element={user && user.role === 'admin' ? <UploadPage /> : <Navigate to="/login" replace />} />
             <Route path="/admin" element={user && user.role === 'admin' ? <AdminPanel /> : <Navigate to="/login" replace />} />
 
             {/* Archive Navigation */}
             <Route path="/category/:value" element={<CollectionView type="category" />} />
-            
             <Route path="/alpha/:value" element={<CollectionView type="letter" />} />
+
+            {/* 🟢 Historic Events */}
+            <Route path="/historic-events" element={<HistoricEventsPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
