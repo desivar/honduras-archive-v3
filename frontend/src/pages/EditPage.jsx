@@ -10,19 +10,32 @@ const EditPage = () => {
   const [fetchError, setFetchError] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
-  const [names, setNames] = useState('');
-  const [countryOfOrigin, setCountryOfOrigin] = useState('');
+  // Shared fields
   const [category, setCategory] = useState('Portrait');
   const [eventDate, setEventDate] = useState('');
-  const [publicationDate, setPublicationDate] = useState(''); // 🟢 NEW
+  const [publicationDate, setPublicationDate] = useState('');
   const [location, setLocation] = useState('');
   const [newspaperName, setNewspaperName] = useState('');
   const [pageNumber, setPageNumber] = useState('');
   const [summary, setSummary] = useState('');
+
+  // Person fields
+  const [names, setNames] = useState('');
+  const [countryOfOrigin, setCountryOfOrigin] = useState('');
+
+  // Historic Event fields
   const [eventName, setEventName] = useState('');
   const [peopleInvolved, setPeopleInvolved] = useState('');
 
+  // 🟢 Business fields
+  const [businessName, setBusinessName] = useState('');
+  const [businessType, setBusinessType] = useState('');
+  const [owner, setOwner] = useState('');
+  const [yearFounded, setYearFounded] = useState('');
+
   const isHistoricEvent = category === 'Historic Event';
+  const isBusiness = category === 'Business';
+  const isPersonRecord = !isHistoricEvent && !isBusiness;
 
   useEffect(() => {
     if (!id) {
@@ -42,18 +55,29 @@ const EditPage = () => {
           return;
         }
 
-        setNames(Array.isArray(r.names) ? r.names.join(', ') : r.fullName || '');
-        setCountryOfOrigin(r.countryOfOrigin || '');
         setCategory(r.category || 'Portrait');
         setEventDate(r.eventDate || '');
-        setPublicationDate(r.publicationDate || ''); // 🟢
+        setPublicationDate(r.publicationDate || '');
         setLocation(r.location || '');
         setNewspaperName(r.newspaperName || '');
         setPageNumber(r.pageNumber || '');
         setSummary(r.summary || '');
+        setImageUrl(r.imageUrl || '');
+
+        // Person fields
+        setNames(Array.isArray(r.names) ? r.names.join(', ') : r.fullName || '');
+        setCountryOfOrigin(r.countryOfOrigin || '');
+
+        // Historic Event fields
         setEventName(r.eventName || '');
         setPeopleInvolved(Array.isArray(r.peopleInvolved) ? r.peopleInvolved.join(', ') : '');
-        setImageUrl(r.imageUrl || '');
+
+        // 🟢 Business fields
+        setBusinessName(r.businessName || '');
+        setBusinessType(r.businessType || '');
+        setOwner(r.owner || '');
+        setYearFounded(r.yearFounded || '');
+
       } catch (err) {
         const status = err.response?.status;
         const message = err.response?.data?.message || err.message;
@@ -78,12 +102,16 @@ const EditPage = () => {
       await axios.put(
         `https://honduras-archive.onrender.com/api/archive/${id}`,
         {
-          names: names.split(',').map(n => n.trim()).filter(Boolean),
-          countryOfOrigin, category,
-          eventDate, publicationDate, // 🟢
+          category, eventDate, publicationDate,
           location, newspaperName, pageNumber, summary,
+          // Person
+          names: names.split(',').map(n => n.trim()).filter(Boolean),
+          countryOfOrigin,
+          // Historic Event
           eventName,
-          peopleInvolved: peopleInvolved.split(',').map(n => n.trim()).filter(Boolean)
+          peopleInvolved: peopleInvolved.split(',').map(n => n.trim()).filter(Boolean),
+          // 🟢 Business
+          businessName, businessType, owner, yearFounded,
         },
         { headers: { 'x-auth-token': token } }
       );
@@ -125,8 +153,7 @@ const EditPage = () => {
       {imageUrl && (
         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
           <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '6px' }}>Current image (read-only):</p>
-          <img
-            src={imageUrl} alt="Record"
+          <img src={imageUrl} alt="Record"
             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
             style={{ maxWidth: '100%', maxHeight: '260px', objectFit: 'contain', borderRadius: '6px', border: '1px solid #ddd' }}
           />
@@ -141,80 +168,94 @@ const EditPage = () => {
         {/* Category */}
         <div>
           <label style={labelStyle}>Category:</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle}>
+          <select value={category} onChange={e => setCategory(e.target.value)} style={inputStyle}>
             <option value="Portrait">Portrait</option>
             <option value="News">News &amp; Clippings</option>
             <option value="Birth">Birth</option>
             <option value="Marriage">Marriage</option>
             <option value="Death">Death</option>
             <option value="Historic Event">🏛️ Historic Event</option>
+            <option value="Business">🏢 Business</option>
           </select>
         </div>
 
+        {/* 🟢 Business fields */}
+        {isBusiness && (
+          <div style={sectionStyle}>
+            <p style={sectionTitleStyle}>🏢 Business Details</p>
+            <div>
+              <label style={labelStyle}>Business Name: *</label>
+              <input type="text" value={businessName} onChange={e => setBusinessName(e.target.value)}
+                placeholder="e.g. Casa Comercial Morazán" style={inputStyle} />
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Type of Business:</label>
+                <input type="text" value={businessType} onChange={e => setBusinessType(e.target.value)}
+                  placeholder="e.g. Import, Pharmacy" style={inputStyle} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Year Founded / Mentioned:</label>
+                <input type="text" value={yearFounded} onChange={e => setYearFounded(e.target.value)}
+                  placeholder="e.g. 1905" style={inputStyle} />
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Owner(s):</label>
+              <input type="text" value={owner} onChange={e => setOwner(e.target.value)}
+                placeholder="e.g. Don Carlos Izaguirre" style={inputStyle} />
+            </div>
+          </div>
+        )}
+
         {/* Historic Event fields */}
         {isHistoricEvent && (
-          <div style={{
-            backgroundColor: '#f7f5ef', border: '2px solid #ACA37E',
-            borderRadius: '8px', padding: '14px',
-            display: 'flex', flexDirection: 'column', gap: '12px'
-          }}>
-            <p style={{ margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.9rem' }}>
-              🏛️ Historic Event Details
-            </p>
+          <div style={sectionStyle}>
+            <p style={sectionTitleStyle}>🏛️ Historic Event Details</p>
             <div>
               <label style={labelStyle}>Event Name:</label>
-              <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)}
+              <input type="text" value={eventName} onChange={e => setEventName(e.target.value)}
                 placeholder="e.g. Battle of La Trinidad" style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>People Involved (separate with commas):</label>
-              <textarea
-                value={peopleInvolved}
-                onChange={(e) => setPeopleInvolved(e.target.value)}
-                placeholder="e.g. Francisco Morazán, José Cecilio del Valle..."
-                rows="3"
-                style={{ ...inputStyle, resize: 'vertical' }}
-              />
+              <textarea value={peopleInvolved} onChange={e => setPeopleInvolved(e.target.value)}
+                placeholder="e.g. Francisco Morazán..." rows="3"
+                style={{ ...inputStyle, resize: 'vertical' }} />
               <p style={hintStyle}>Separate each name with a comma</p>
             </div>
           </div>
         )}
 
         {/* Person fields */}
-        {!isHistoricEvent && (
+        {isPersonRecord && (
           <>
             <div>
               <label style={labelStyle}>Names (separate with commas):</label>
-              <input type="text" value={names} onChange={(e) => setNames(e.target.value)}
-                required style={inputStyle} />
+              <input type="text" value={names} onChange={e => setNames(e.target.value)} style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Country of Origin:</label>
-              <input type="text" value={countryOfOrigin} onChange={(e) => setCountryOfOrigin(e.target.value)}
-                style={inputStyle} />
+              <input type="text" value={countryOfOrigin} onChange={e => setCountryOfOrigin(e.target.value)} style={inputStyle} />
             </div>
           </>
         )}
 
-        {/* 🟢 Dual date fields */}
-        <div style={{
-          backgroundColor: '#f7f5ef', border: '1px solid #ACA37E',
-          borderRadius: '8px', padding: '14px',
-          display: 'flex', flexDirection: 'column', gap: '12px'
-        }}>
+        {/* Dual dates */}
+        <div style={{ ...sectionStyle, border: '1px solid #ACA37E' }}>
           <p style={{ margin: 0, fontSize: '0.8rem', color: '#737958', fontWeight: 'bold', textTransform: 'uppercase' }}>
             📅 Dates
           </p>
           <div style={{ display: 'flex', gap: '12px' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Date of Event:</label>
-              <input type="text" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
+              <input type="text" value={eventDate} onChange={e => setEventDate(e.target.value)}
                 placeholder="e.g. 5 de Enero 1827" style={inputStyle} />
               <p style={hintStyle}>When it actually happened</p>
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Date of Publication:</label>
-              <input type="text" value={publicationDate} onChange={(e) => setPublicationDate(e.target.value)}
+              <input type="text" value={publicationDate} onChange={e => setPublicationDate(e.target.value)}
                 placeholder="e.g. 12 de Marzo 1930" style={inputStyle} />
               <p style={hintStyle}>When it appeared in the source</p>
             </div>
@@ -224,25 +265,25 @@ const EditPage = () => {
         {/* Location */}
         <div>
           <label style={labelStyle}>Location:</label>
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} style={inputStyle} />
+          <input type="text" value={location} onChange={e => setLocation(e.target.value)} style={inputStyle} />
         </div>
 
         {/* Source */}
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 2 }}>
             <label style={labelStyle}>Newspaper / Source:</label>
-            <input type="text" value={newspaperName} onChange={(e) => setNewspaperName(e.target.value)} style={inputStyle} />
+            <input type="text" value={newspaperName} onChange={e => setNewspaperName(e.target.value)} style={inputStyle} />
           </div>
           <div style={{ flex: 1 }}>
             <label style={labelStyle}>Page:</label>
-            <input type="text" value={pageNumber} onChange={(e) => setPageNumber(e.target.value)} style={inputStyle} />
+            <input type="text" value={pageNumber} onChange={e => setPageNumber(e.target.value)} style={inputStyle} />
           </div>
         </div>
 
         {/* Summary */}
         <div>
           <label style={labelStyle}>Summary:</label>
-          <textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows="4" style={inputStyle} />
+          <textarea value={summary} onChange={e => setSummary(e.target.value)} rows="4" style={inputStyle} />
         </div>
 
         {/* Buttons */}
@@ -250,9 +291,7 @@ const EditPage = () => {
           <button type="button" onClick={() => navigate(-1)} style={{
             flex: 1, padding: '14px', backgroundColor: 'white', color: '#737958',
             border: '2px solid #737958', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold'
-          }}>
-            Cancel
-          </button>
+          }}>Cancel</button>
           <button type="submit" disabled={saving} style={{
             flex: 2, padding: '14px',
             backgroundColor: saving ? '#aaa' : '#737958',
@@ -267,19 +306,10 @@ const EditPage = () => {
   );
 };
 
-const labelStyle = {
-  display: 'block', marginBottom: '4px',
-  fontWeight: 'bold', fontSize: '0.9rem', color: '#444'
-};
-
-const inputStyle = {
-  padding: '10px', borderRadius: '4px',
-  border: '1px solid #ccc', fontSize: '1rem',
-  width: '100%', boxSizing: 'border-box'
-};
-
-const hintStyle = {
-  margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fontStyle: 'italic'
-};
+const labelStyle = { display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '0.9rem', color: '#444' };
+const inputStyle = { padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', width: '100%', boxSizing: 'border-box' };
+const hintStyle = { margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fontStyle: 'italic' };
+const sectionStyle = { backgroundColor: '#f7f5ef', border: '2px solid #ACA37E', borderRadius: '8px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '12px' };
+const sectionTitleStyle = { margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.9rem' };
 
 export default EditPage;
