@@ -1,7 +1,5 @@
 const Tesseract = require('tesseract.js');
 const pdfParse = require('pdf-parse');
-const { createCanvas } = require('canvas');
-const pdfjsLib = require('pdfjs-dist');
 
 // ── Extraction Rules ──────────────────────────────────────────────────────────
 const EXTRACTION_RULES = {
@@ -25,28 +23,17 @@ const LOCATIONS = [
 ];
 
 /**
- * Renders a single PDF page to a PNG buffer using pdfjs-dist + canvas
- */
-const renderPageToImage = async (pdfDoc, pageNum) => {
-  const page = await pdfDoc.getPage(pageNum);
-  const scale = 2.0;
-  const viewport = page.getViewport({ scale });
-  const canvas = createCanvas(viewport.width, viewport.height);
-  const context = canvas.getContext('2d');
-  await page.render({ canvasContext: context, viewport }).promise;
-  return canvas.toBuffer('image/png');
-};
-
-/**
  * processHistoricalPDF
- * 1. Try pdf-parse for text layer (fast)
- * 2. If scanned, render pages to images via pdfjs-dist + run Tesseract OCR
+ * Strategy:
+ * 1. Try pdf-parse for text layer (works for PDFs with embedded text)
+ * 2. If scanned, use Tesseract directly on the PDF buffer
+ *    (Tesseract 4+ can handle PDF buffers on Linux/Render)
  */
 const processHistoricalPDF = async (pdfBuffer) => {
   try {
     let extractedText = '';
 
-    // ATTEMPT 1: Text layer via pdf-parse
+    // ATTEMPT 1: Text layer via pdf-parse (fast)
     console.log('📜 Step 1: Trying pdf-parse...');
     try {
       const pdfData = await pdfParse(pdfBuffer);
@@ -56,41 +43,21 @@ const processHistoricalPDF = async (pdfBuffer) => {
       console.warn('⚠️ pdf-parse failed:', parseErr.message);
     }
 
-    // ATTEMPT 2: pdfjs-dist + canvas + Tesseract
+    // ATTEMPT 2: Tesseract directly on PDF buffer
     if (!extractedText || extractedText.trim().length < 50) {
-      console.log('🔍 Step 2: No text layer. Running OCR pipeline...');
+      console.log('🔍 Step 2: No text layer. Trying Tesseract on PDF buffer...');
       try {
-        console.log('📦 Loading PDF with pdfjs-dist...');
-        const uint8Array = new Uint8Array(pdfBuffer);
-        const pdfDoc = await pdfjsLib.getDocument({ data: uint8Array }).promise;
-        console.log(`📄 PDF loaded! Total pages: ${pdfDoc.numPages}`);
-
-        const pagesToProcess = Math.min(pdfDoc.numPages, 3);
-        const allText = [];
-
-        for (let i = 1; i <= pagesToProcess; i++) {
-          console.log(`🖼️ Rendering page ${i} to image...`);
-          const imageBuffer = await renderPageToImage(pdfDoc, i);
-          console.log(`🔤 Running Tesseract OCR on page ${i}...`);
-
-          const { data: { text } } = await Tesseract.recognize(imageBuffer, 'spa', {
-            logger: m => {
-              if (m.status === 'recognizing text') {
-                console.log(`Page ${i} OCR: ${Math.round(m.progress * 100)}%`);
-              }
+        const { data: { text } } = await Tesseract.recognize(pdfBuffer, 'spa', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
             }
-          });
-
-          if (text && text.trim().length > 0) allText.push(text);
-          console.log(`✅ Page ${i} done: ${text.length} characters`);
-        }
-
-        extractedText = allText.join('\n\n');
-        console.log(`✅ Total extracted: ${extractedText.length} characters`);
-
+          }
+        });
+        extractedText = text || '';
+        console.log(`✅ Tesseract extracted ${extractedText.length} characters`);
       } catch (ocrErr) {
-        console.error('❌ OCR pipeline failed:', ocrErr.message);
-        console.error(ocrErr.stack);
+        console.error('❌ Tesseract failed:', ocrErr.message);
         extractedText = '';
       }
     }
