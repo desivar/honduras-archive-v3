@@ -36,7 +36,7 @@ const BatchReviewPage = () => {
       setSummary(autoFields.summary || '');
       setLocation(autoFields.location || '');
       
-      alert("Internal AI Scan Complete! Please review the 1800s data below.");
+      alert("Internal AI Scan Complete! Please review the  data below.");
     } catch (err) {
       console.error("Scanning error:", err);
       alert("The Internal AI had trouble reading this document. You can still fill it manually.");
@@ -103,7 +103,7 @@ const BatchReviewPage = () => {
             backgroundColor: isScanning ? '#ccc' : '#4A90E2'
           }}
         >
-          {isScanning ? '⏳ Internal AI is reading 1800s text...' : '🔍 Scan with Internal AI'}
+          {isScanning ? '⏳ Internal AI is reading text...' : '🔍 Scan with Internal AI'}
         </button>
       </div>
 
