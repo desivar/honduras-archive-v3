@@ -1,7 +1,7 @@
 const Tesseract = require('tesseract.js');
 const pdfParse = require('pdf-parse');
 const { createCanvas } = require('canvas');
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+const pdfjsLib = require('pdfjs-dist');
 
 // ── Extraction Rules ──────────────────────────────────────────────────────────
 const EXTRACTION_RULES = {
