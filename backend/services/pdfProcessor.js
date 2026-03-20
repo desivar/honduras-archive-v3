@@ -151,5 +151,15 @@ const processHistoricalPDF = async (pdfBuffer) => {
     return { success: false, error: error.message };
   }
 };
-
+if (!extractedText || extractedText.trim().length < 50) {
+  console.log('🔍 Step 2: Scanned PDF detected...');
+  try {
+    console.log('📦 Loading pdfjs-dist...');
+    const uint8Array = new Uint8Array(pdfBuffer);
+    console.log(`📦 Buffer size: ${pdfBuffer.length} bytes`);
+    const pdfDoc = await pdfjsLib.getDocument({ data: uint8Array }).promise;
+    console.log(`📄 PDF loaded! Pages: ${pdfDoc.numPages}`);
+    console.log('🖼️ Loading canvas...');
+    const { createCanvas } = require('canvas');
+    console.log('✅ Canvas loaded!');
 module.exports = { processHistoricalPDF };
