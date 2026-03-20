@@ -6,10 +6,11 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 const authRoutes = require('./routes/authRoutes');
+const batchRoutes = require('./routes/batchRoutes');
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'honduras_archive_secret';
-
+app.use('/api/batch', batchRoutes);
 // Middleware
 app.use(express.json());
 app.use(cors({
