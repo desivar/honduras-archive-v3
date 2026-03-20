@@ -10,8 +10,8 @@ const batchRoutes = require('./routes/batchRoutes');
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'honduras_archive_secret';
-app.use('/api/batch', batchRoutes);
-// Middleware
+
+// ✅ Middleware FIRST — before any routes
 app.use(express.json());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'https://honduras-archive-1.onrender.com',
@@ -71,10 +71,8 @@ const archiveSchema = new mongoose.Schema({
   pageNumber: String,
   imageUrl: String,
   cloudinaryId: String,
-  // Historic Event fields
   eventName: String,
   peopleInvolved: [String],
-  // 🟢 Business fields
   businessName: String,
   businessType: String,
   owner: String,
@@ -83,7 +81,9 @@ const archiveSchema = new mongoose.Schema({
 });
 const Archive = mongoose.model('Archive', archiveSchema);
 
+// ✅ Routes AFTER middleware
 app.use('/api/auth', authRoutes);
+app.use('/api/batch', batchRoutes);  // ✅ Moved here, after middleware
 
 app.get('/', (req, res) => res.send('Honduras Archive API'));
 
@@ -181,7 +181,7 @@ app.put('/api/archive/:id', async (req, res) => {
       title, names, fullText, category, location,
       eventDate, publicationDate, newspaperName, pageNumber,
       summary, countryOfOrigin, eventName, peopleInvolved,
-      businessName, businessType, owner, yearFounded // 🟢
+      businessName, businessType, owner, yearFounded
     } = req.body;
 
     let namesArray = names;
