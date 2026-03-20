@@ -10,10 +10,24 @@ const EXTRACTION_RULES = {
   historicEvents: ['decreto', 'revolución', 'elecciones', 'tratado', 'batalla', 'guerra'],
 };
 
-// ── Location Detection ────────────────────────────────────────────────────────
+// ── Location Detection — Honduras Departments & Major Cities ─────────────────
 const LOCATIONS = [
-  'Tegucigalpa', 'San Pedro Sula', 'Comayagua', 'La Ceiba',
-  'Choluteca', 'Juticalpa', 'Santa Rosa de Copán', 'Trujillo'
+  // Major Cities
+  'Tegucigalpa', 'San Pedro Sula', 'La Ceiba', 'Comayagua',
+  'Choluteca', 'Juticalpa', 'Santa Rosa de Copán', 'Trujillo',
+  'Danlí', 'Siguatepeque', 'Tela', 'El Progreso', 'Tocoa',
+  'Olanchito', 'Yoro', 'Nacaome', 'Puerto Cortés', 'Roatán',
+'Catacamas',
+  // Departments
+  'Atlántida', 'Colón', 'Comayagua', 'Copán', 'Cortés',
+  'Choluteca', 'El Paraíso', 'Francisco Morazán', 'Gracias a Dios',
+  'Intibucá', 'Islas de la Bahía', 'La Paz', 'Lempira',
+  'Ocotepeque', 'Olancho', 'Santa Bárbara', 'Valle', 'Yoro',
+ 
+  // Historic / Colonial names common in 1800s-1930s documents
+  'Tegucigalpa D.C.', 'Distrito Central', 'Comayagüela',
+  'Santa Bárbara', 'Gracias', 'Sensenti', 'Amapala',
+  'San Marcos de Colón', 'Esquías', 'Cedros', 'Ojojona',
 ];
 
 /**
