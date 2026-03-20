@@ -264,4 +264,25 @@ const hintStyle = { margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fon
 const sectionStyle = { backgroundColor: '#f7f5ef', border: '2px solid #ACA37E', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' };
 const sectionTitleStyle = { margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.95rem' };
 
+// --- ADD THESE AT THE BOTTOM OF UploadPage.jsx ---
+
+const switchContainerStyle = {
+  backgroundColor: '#f0f4f8',
+  padding: '15px',
+  borderRadius: '8px',
+  marginBottom: '20px',
+  textAlign: 'center',
+  border: '1px dashed #4A90E2'
+};
+
+const batchLinkStyle = {
+  display: 'inline-block',
+  marginTop: '8px',
+  padding: '10px 20px',
+  backgroundColor: '#4A90E2',
+  color: 'white',
+  textDecoration: 'none',
+  borderRadius: '5px',
+  fontWeight: 'bold'
+};
 export default UploadPage;
