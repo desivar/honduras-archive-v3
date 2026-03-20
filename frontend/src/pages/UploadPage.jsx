@@ -1,16 +1,3 @@
-import { Link } from 'react-router-dom'; // Add this to your imports
-
-// Inside your return() function, before the form starts:
-<div style={switchContainerStyle}>
-  <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
-    Have a full PDF magazine or newspaper?
-  </p>
-  <Link to="/batch-upload" style={batchLinkStyle}>
-    🚀 Switch to AI Batch Mode
-  </Link>
-</div>
-
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
@@ -37,7 +24,7 @@ const UploadPage = () => {
   const [eventName, setEventName] = useState('');
   const [peopleInvolved, setPeopleInvolved] = useState('');
 
-  // 🟢 Business fields
+  // Business fields
   const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [owner, setOwner] = useState('');
@@ -107,6 +94,15 @@ const UploadPage = () => {
         Upload New Archive Record
       </h2>
 
+      <div style={switchContainerStyle}>
+        <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
+          Have a full PDF magazine or newspaper?
+        </p>
+        <Link to="/batch-upload" style={batchLinkStyle}>
+          🚀 Switch to AI Batch Mode
+        </Link>
+      </div>
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Category */}
@@ -142,7 +138,7 @@ const UploadPage = () => {
           </div>
         )}
 
-        {/* 🟢 Business fields */}
+        {/* Business fields */}
         {isBusiness && (
           <div style={sectionStyle}>
             <p style={sectionTitleStyle}>🏢 Business Details</p>
@@ -264,8 +260,6 @@ const hintStyle = { margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fon
 const sectionStyle = { backgroundColor: '#f7f5ef', border: '2px solid #ACA37E', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' };
 const sectionTitleStyle = { margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.95rem' };
 
-// --
-
 const switchContainerStyle = {
   backgroundColor: '#f0f4f8',
   padding: '15px',
@@ -285,4 +279,5 @@ const batchLinkStyle = {
   borderRadius: '5px',
   fontWeight: 'bold'
 };
+
 export default UploadPage;
