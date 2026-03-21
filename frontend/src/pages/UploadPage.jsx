@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const UploadPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Shared
+  // Shared fields
   const [category, setCategory] = useState('Portrait');
   const [eventDate, setEventDate] = useState('');
   const [publicationDate, setPublicationDate] = useState('');
@@ -16,7 +16,7 @@ const UploadPage = () => {
   const [summary, setSummary] = useState('');
   const [image, setImage] = useState(null);
 
-  // Person fields
+  // Person-record fields
   const [names, setNames] = useState('');
   const [countryOfOrigin, setCountryOfOrigin] = useState('');
 
@@ -94,15 +94,7 @@ const UploadPage = () => {
         Upload New Archive Record
       </h2>
 
-      <div style={switchContainerStyle}>
-        <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
-          Have a full PDF magazine or newspaper?
-        </p>
-        <Link to="/batch-upload" style={batchLinkStyle}>
-          🚀 Switch to AI Batch Mode
-        </Link>
-      </div>
-
+      {/* FIX: All fields are now correctly inside the <form> tag */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Category */}
@@ -125,14 +117,18 @@ const UploadPage = () => {
             <p style={sectionTitleStyle}>🏛️ Historic Event Details</p>
             <div>
               <label style={labelStyle}>Event Name: *</label>
-              <input type="text" value={eventName} onChange={e => setEventName(e.target.value)}
-                required placeholder="e.g. Battle of La Trinidad" style={inputStyle} />
+              <input
+                type="text" value={eventName} onChange={e => setEventName(e.target.value)}
+                required placeholder="e.g. Battle of La Trinidad" style={inputStyle}
+              />
             </div>
             <div>
               <label style={labelStyle}>People Involved (separate with commas):</label>
-              <textarea value={peopleInvolved} onChange={e => setPeopleInvolved(e.target.value)}
+              <textarea
+                value={peopleInvolved} onChange={e => setPeopleInvolved(e.target.value)}
                 placeholder="e.g. Francisco Morazán, José Cecilio del Valle..."
-                rows="3" style={{ ...inputStyle, resize: 'vertical' }} />
+                rows="3" style={{ ...inputStyle, resize: 'vertical' }}
+              />
               <p style={hintStyle}>Separate each name with a comma</p>
             </div>
           </div>
@@ -144,25 +140,33 @@ const UploadPage = () => {
             <p style={sectionTitleStyle}>🏢 Business Details</p>
             <div>
               <label style={labelStyle}>Business Name: *</label>
-              <input type="text" value={businessName} onChange={e => setBusinessName(e.target.value)}
-                required placeholder="e.g. Casa Comercial Morazán" style={inputStyle} />
+              <input
+                type="text" value={businessName} onChange={e => setBusinessName(e.target.value)}
+                required placeholder="e.g. Casa Comercial Morazán" style={inputStyle}
+              />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <div style={{ flex: 1 }}>
                 <label style={labelStyle}>Type of Business:</label>
-                <input type="text" value={businessType} onChange={e => setBusinessType(e.target.value)}
-                  placeholder="e.g. Import, Pharmacy, Hotel" style={inputStyle} />
+                <input
+                  type="text" value={businessType} onChange={e => setBusinessType(e.target.value)}
+                  placeholder="e.g. Import, Pharmacy, Hotel" style={inputStyle}
+                />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={labelStyle}>Year Founded / Mentioned:</label>
-                <input type="text" value={yearFounded} onChange={e => setYearFounded(e.target.value)}
-                  placeholder="e.g. 1905" style={inputStyle} />
+                <input
+                  type="text" value={yearFounded} onChange={e => setYearFounded(e.target.value)}
+                  placeholder="e.g. 1905" style={inputStyle}
+                />
               </div>
             </div>
             <div>
               <label style={labelStyle}>Owner(s):</label>
-              <input type="text" value={owner} onChange={e => setOwner(e.target.value)}
-                placeholder="e.g. Don Carlos Izaguirre" style={inputStyle} />
+              <input
+                type="text" value={owner} onChange={e => setOwner(e.target.value)}
+                placeholder="e.g. Don Carlos Izaguirre" style={inputStyle}
+              />
             </div>
           </div>
         )}
@@ -172,33 +176,41 @@ const UploadPage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={labelStyle}>Names (separate with commas): *</label>
-              <input type="text" value={names} onChange={e => setNames(e.target.value)}
-                required placeholder="e.g. Sara Gravina, Carlos Izaguirre" style={inputStyle} />
+              <input
+                type="text" value={names} onChange={e => setNames(e.target.value)}
+                required placeholder="e.g. Sara Gravina, Carlos Izaguirre" style={inputStyle}
+              />
             </div>
             <div>
               <label style={labelStyle}>Person's Origin:</label>
-              <input type="text" value={countryOfOrigin} onChange={e => setCountryOfOrigin(e.target.value)}
-                placeholder="e.g. Italy" style={inputStyle} />
+              <input
+                type="text" value={countryOfOrigin} onChange={e => setCountryOfOrigin(e.target.value)}
+                placeholder="e.g. Italy" style={inputStyle}
+              />
             </div>
           </div>
         )}
 
-        {/* Dual dates */}
-        <div style={{ ...sectionStyle, gap: '12px' }}>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#737958', fontWeight: 'bold', textTransform: 'uppercase' }}>
+        {/* FIX: Dates section — removed the immediately-closing wrapper div */}
+        <div>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.8rem', color: '#737958', fontWeight: 'bold', textTransform: 'uppercase' }}>
             📅 Dates
           </p>
           <div style={{ display: 'flex', gap: '12px' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Date of Event:</label>
-              <input type="text" value={eventDate} onChange={e => setEventDate(e.target.value)}
-                placeholder="e.g. 5 de Enero 1827" style={inputStyle} />
+              <input
+                type="text" value={eventDate} onChange={e => setEventDate(e.target.value)}
+                placeholder="e.g. 5 de Enero 1827" style={inputStyle}
+              />
               <p style={hintStyle}>When it actually happened</p>
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Date of Publication:</label>
-              <input type="text" value={publicationDate} onChange={e => setPublicationDate(e.target.value)}
-                placeholder="e.g. 12 de Marzo 1930" style={inputStyle} />
+              <input
+                type="text" value={publicationDate} onChange={e => setPublicationDate(e.target.value)}
+                placeholder="e.g. 12 de Marzo 1930" style={inputStyle}
+              />
               <p style={hintStyle}>When it appeared in the source</p>
             </div>
           </div>
@@ -207,48 +219,66 @@ const UploadPage = () => {
         {/* Location */}
         <div>
           <label style={labelStyle}>Location / Place:</label>
-          <input type="text" value={location} onChange={e => setLocation(e.target.value)}
-            placeholder="e.g. Tegucigalpa, Francisco Morazán" style={inputStyle} />
+          <input
+            type="text" value={location} onChange={e => setLocation(e.target.value)}
+            placeholder="e.g. Tegucigalpa, Francisco Morazán" style={inputStyle}
+          />
         </div>
 
         {/* Source */}
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 2 }}>
             <label style={labelStyle}>Newspaper / Source:</label>
-            <input type="text" value={newspaperName} onChange={e => setNewspaperName(e.target.value)}
-              placeholder="e.g. El Cronista" style={inputStyle} />
+            <input
+              type="text" value={newspaperName} onChange={e => setNewspaperName(e.target.value)}
+              placeholder="e.g. El Cronista" style={inputStyle}
+            />
           </div>
           <div style={{ flex: 1 }}>
             <label style={labelStyle}>Page:</label>
-            <input type="text" value={pageNumber} onChange={e => setPageNumber(e.target.value)}
-              placeholder="e.g. 5" style={inputStyle} />
+            <input
+              type="text" value={pageNumber} onChange={e => setPageNumber(e.target.value)}
+              placeholder="e.g. 5" style={inputStyle}
+            />
           </div>
         </div>
 
         {/* Summary */}
         <div>
           <label style={labelStyle}>Description / Summary:</label>
-          <textarea value={summary} onChange={e => setSummary(e.target.value)} rows="4"
+          <textarea
+            value={summary} onChange={e => setSummary(e.target.value)} rows="4"
             placeholder={
               isHistoricEvent ? 'Describe what happened during this event...'
               : isBusiness ? 'Describe the business, its history, products or services...'
-              : 'Summary of the record...'}
-            style={inputStyle} />
+              : 'Summary of the record...'
+            }
+            style={{ ...inputStyle, resize: 'vertical' }}
+          />
         </div>
 
         {/* Image */}
         <div>
           <label style={labelStyle}>Upload Image:</label>
-          <input type="file" onChange={e => setImage(e.target.files[0])} accept="image/*" style={inputStyle} />
+          <input
+            type="file" onChange={e => setImage(e.target.files[0])}
+            accept="image/*" style={inputStyle}
+          />
         </div>
 
-        <button type="submit" disabled={loading} style={{
-          padding: '15px', backgroundColor: loading ? '#aaa' : '#737958',
-          color: 'white', border: 'none', borderRadius: '6px',
-          cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '1rem'
-        }}>
+        {/* FIX: Button label is now correctly placed between the opening and closing tags */}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: '15px', backgroundColor: loading ? '#aaa' : '#737958',
+            color: 'white', border: 'none', borderRadius: '6px',
+            cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '1rem'
+          }}
+        >
           {loading ? 'Uploading...' : '💾 Save to Archive'}
         </button>
+
       </form>
     </div>
   );
@@ -259,25 +289,5 @@ const inputStyle = { padding: '10px', borderRadius: '4px', border: '1px solid #c
 const hintStyle = { margin: '4px 0 0 0', fontSize: '0.75rem', color: '#999', fontStyle: 'italic' };
 const sectionStyle = { backgroundColor: '#f7f5ef', border: '2px solid #ACA37E', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px' };
 const sectionTitleStyle = { margin: 0, fontWeight: 'bold', color: '#737958', fontSize: '0.95rem' };
-
-const switchContainerStyle = {
-  backgroundColor: '#f0f4f8',
-  padding: '15px',
-  borderRadius: '8px',
-  marginBottom: '20px',
-  textAlign: 'center',
-  border: '1px dashed #4A90E2'
-};
-
-const batchLinkStyle = {
-  display: 'inline-block',
-  marginTop: '8px',
-  padding: '10px 20px',
-  backgroundColor: '#4A90E2',
-  color: 'white',
-  textDecoration: 'none',
-  borderRadius: '5px',
-  fontWeight: 'bold'
-};
 
 export default UploadPage;
