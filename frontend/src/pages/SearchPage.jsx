@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ResultCard, { ResultList } from '../components/ResultCard';
+import TodayInHistory from '../components/TodayInHistory';
 
 const SearchPage = () => {
   const [query, setQuery] = useState("");
@@ -46,6 +47,8 @@ const SearchPage = () => {
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', backgroundColor: '#EFE7DD', minHeight: '100vh' }}>
 
+      <TodayInHistory />
+
       <h1 style={{ color: '#737958', marginBottom: '20px', fontSize: '2.5rem' }}>Recuerdos de Honduras</h1>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
@@ -78,6 +81,7 @@ const SearchPage = () => {
           {query ? `No records found for "${query}".` : 'No records in archive yet.'}
         </p>
       )}
+
     </div>
   );
 };
