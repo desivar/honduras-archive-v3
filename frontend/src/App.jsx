@@ -4,7 +4,6 @@ import axios from 'axios';
 import Sidebar from './components/SideBar';
 import SearchPage from './pages/SearchPage';
 import UploadPage from './pages/UploadPage';
-import BatchReviewPage from './pages/BatchReviewPage';
 import CollectionView from './pages/CollectionView';
 import RecordDetail from './pages/RecordDetail';
 import Login from './pages/LoginPage';
