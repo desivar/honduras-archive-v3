@@ -38,7 +38,7 @@ const ResultCard = ({ record, category, onDeleteSuccess }) => {
   };
 
   const { title, icon, sub } = getInfo();
-  const recordUrl = `${window.location.origin}/record/${record._id}`;
+  
 
   // 2. Handlers
   // ✅ KEY FIX: Instead of stopPropagation on every button,
@@ -63,13 +63,14 @@ const ResultCard = ({ record, category, onDeleteSuccess }) => {
     }
   };
 
-  const copyCitation = (e) => {
-    e.preventDefault();
-    const source = record.newspaperName || 'Archivo Nacional';
-    const date = record.publicationDate || record.eventDate || 'n.d.';
-    navigator.clipboard.writeText(`${title} (${date}). ${record.category}. ${record.location || 'Honduras'}: ${source}.`);
-    alert('APA Citation copied!');
-  };
+const copyCitation = (e) => {
+  e.preventDefault();
+  const source = record.newspaperName || 'Archivo Nacional';
+  const date = record.publicationDate || record.eventDate || 'n.d.';
+  const url = `${window.location.origin}/record/${record._id}`; // 👈 moved here
+  navigator.clipboard.writeText(`${title} (${date}). ${record.category}. ${record.location || 'Honduras'}: ${source}. ${url}`);
+  alert('APA Citation copied!');
+};
 
   return (
     <div
@@ -139,7 +140,7 @@ const ResultCard = ({ record, category, onDeleteSuccess }) => {
 
 // ─── ResultList (The Grid Layout) ───────────────────────────────────────────
 export const ResultList = ({ records = [], pageSize = 20, onDeleteSuccess }) => {
-  const [currentPage, setCurrentPage] = React.useState(1);
+ const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(records.length / pageSize);
   const paginated = records.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
