@@ -1,61 +1,97 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios'; // 🟢 Now used in handleDelete below
 
 const ArchiveCard = ({ record, category, onDeleteSuccess }) => {
   const navigate = useNavigate();
+  
+  // Get token and user for Admin checks
+  const token = localStorage.getItem('token');
   const isAdmin = JSON.parse(localStorage.getItem('user'))?.role === 'admin';
 
-  // This "Switch" handles the differences between collections
+  // Define accent color
+  const accentColor = (category === 'Business') ? '#586379' : '#737958';
+
   const getInfo = () => {
     switch (category) {
-      case 'Business': return { title: record.businessName, icon: '🏢', sub: record.businessType };
-      case 'Historic Event': return { title: record.eventName, icon: '🏛️', sub: record.location };
-      case 'Portrait': return { title: record.fullName, icon: '🖼️', sub: record.eventDate };
-      case 'Person': return { title: record.fullName, icon: '👤', sub: record.occupation };
+      case 'Business': return { title: record.businessName || 'Unnamed Business', icon: '🏢', sub: record.businessType };
+      case 'Historic Event': return { title: record.eventName || 'Unnamed Event', icon: '🏛️', sub: record.location };
+      case 'Portrait': return { title: record.fullName || 'Portrait', icon: '🖼️', sub: record.eventDate };
+      case 'Person': return { title: record.fullName || 'Person', icon: '👤', sub: record.occupation };
+      case 'News': return { title: record.headline || 'News Clipping', icon: '📰', sub: record.newspaperName };
       default: return { title: record.title || 'Record', icon: '📄', sub: '' };
     }
   };
 
   const { title, icon, sub } = getInfo();
 
-  const stop = (e) => e.stopPropagation(); // Helper to stop "double clicks"
+  // ─── 🟢 THIS USES AXIOS AND ONDELETESUCCESS ───
+  const handleDelete = async (e) => {
+    e.stopPropagation(); // Prevents the card from opening when clicking delete
+    if (window.confirm(`Delete "${title}"?`)) {
+      try {
+        await axios.delete(`https://honduras-archive.onrender.com/api/archive/${record._id}`, {
+          headers: { 'x-auth-token': token }
+        });
+        alert('Deleted!');
+        if (onDeleteSuccess) onDeleteSuccess(); // 🟢 Now used!
+      } catch (err) {
+        alert('Error deleting record');
+      }
+    }
+  };
+
+  const stop = (e) => e.stopPropagation();
 
   return (
     <div 
       onClick={() => navigate(`/record/${record._id}`)} 
-      style={cardStyle}
+      style={cardStyle(accentColor)}
     >
-      <div style={headerStyle}>
-        <span>{icon}</span>
-        <h3 style={{ color: 'white', margin: 0 }}>{title}</h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+        <span style={{ fontSize: '1.5rem' }}>{icon}</span>
+        <h3 style={{ color: accentColor, margin: 0 }}>{title}</h3>
       </div>
       
-      {record.imageUrl && <img src={record.imageUrl} style={imgStyle} alt={title} />}
+      {record.imageUrl && <img src={record.imageUrl} style={imageStyle} alt={title} />}
 
-      <div style={{ padding: '15px' }}>
-        <p><strong>{sub}</strong></p>
-        <button onClick={(e) => { stop(e); /* Citation Logic */ }}>📄 Cite</button>
-        {isAdmin && <button onClick={(e) => { stop(e); /* Delete Logic */ }}>🗑️ Delete</button>}
+      <div style={{ padding: '10px 0' }}>
+        {sub && <p style={{ fontSize: '0.9rem', color: '#555' }}><strong>{sub}</strong></p>}
+        
+        <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+          <button 
+            onClick={(e) => { stop(e); alert("Citation logic goes here!"); }} 
+            style={buttonStyle}
+          >
+            📄 Cite
+          </button>
+          
+          {isAdmin && (
+            <button 
+              onClick={handleDelete} // 🟢 Connected to the function above
+              style={{ ...buttonStyle, color: '#a94442', borderColor: '#a94442' }}
+            >
+              🗑️ Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-// --- Updated Styles for ResultCard.jsx ---
-
-const cardStyle = (accentColor) => ({
+// --- STYLES (Make sure these are at the bottom) ---
+const cardStyle = (color) => ({
   backgroundColor: 'white',
   padding: '20px',
   marginBottom: '20px',
   borderRadius: '8px',
   boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-  border: `2px solid ${accentColor}`,
-  position: 'relative',
-  cursor: 'pointer', // Makes it look clickable
-  transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out', // Smooth hover
+  border: `2px solid ${color}`,
+  cursor: 'pointer',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  transition: 'transform 0.2s'
 });
 
 const imageStyle = {
@@ -66,32 +102,16 @@ const imageStyle = {
   height: 'auto',
   objectFit: 'contain',
   maxHeight: '400px',
-  backgroundColor: '#f9f9f9' // Light grey background for document clippings
+  backgroundColor: '#f9f9f9'
 };
 
-const badgeContainerStyle = {
-  backgroundColor: '#f7f5ef',
-  border: '1px solid #e0dcc8',
-  borderRadius: '6px',
+const buttonStyle = {
   padding: '8px 12px',
-  marginBottom: '10px',
-  display: 'flex',
-  gap: '15px',
-  flexWrap: 'wrap',
+  backgroundColor: 'white',
+  border: '1px solid #ccc',
+  borderRadius: '4px',
+  cursor: 'pointer',
   fontSize: '0.85rem'
 };
 
-const shareItemStyle = {
-  display: 'block',
-  width: '100%',
-  padding: '11px 16px',
-  backgroundColor: 'white',
-  border: 'none',
-  borderBottom: '1px solid #f0f0f0',
-  cursor: 'pointer',
-  textAlign: 'left',
-  fontSize: '0.9rem',
-  color: '#333',
-  fontWeight: 'bold'
-};
 export default ArchiveCard;
