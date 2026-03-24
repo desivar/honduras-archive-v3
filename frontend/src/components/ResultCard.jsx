@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // 👈 Added this line to move between pages
 
 // ─── ResultCard ───────────────────────────────────────────────────────────────
 const ResultCard = ({ record, onDeleteSuccess }) => {
+  const navigate = useNavigate(); // 👈 Add turn on navigation 
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
   const isAdmin = user && user.role === 'admin';
@@ -89,12 +91,25 @@ const ResultCard = ({ record, onDeleteSuccess }) => {
         <img src={record.imageUrl} alt={displayName} loading="lazy"
           style={{ width: '100%', borderRadius: '4px', marginBottom: '15px', display: 'block', height: 'auto', objectFit: 'contain', maxHeight: '500px' }} />
       )}
-
+      {/* 🟢 ADD THIS WRAPPER TO MAKE IT CLICKABLE 🟢 */}
+    <div 
+      onClick={() => navigate(`/record/${record._id}`)} 
+      style={{ cursor: 'pointer' }}
+    >
+      {record.imageUrl && (
+        <img 
+          src={record.imageUrl} 
+          alt={displayName} 
+          loading="lazy"
+          style={{ width: '100%', borderRadius: '4px', marginBottom: '15px', display: 'block', height: 'auto', objectFit: 'contain', maxHeight: '500px' }} 
+        />
+      )}
+      
       <h3 style={{ color: accentColor, margin: '0 0 10px 0', fontSize: '1.3rem' }}>
-        {isBusiness && '🏢 '}{isHistoricEvent && '🏛️ '}{displayName}
+        {isBusiness && '🏢 '}{isHistoricEvent && '🏛️ '}{displayName} 
         {record.countryOfOrigin && <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}> (from {record.countryOfOrigin})</span>}
       </h3>
-
+      </div>
       <div style={{ fontSize: '0.9rem', color: '#333' }}>
         <p style={{ marginBottom: '8px' }}><strong>Category:</strong> {record.category}</p>
 
