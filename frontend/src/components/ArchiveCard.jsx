@@ -42,5 +42,56 @@ const ArchiveCard = ({ record, category, onDeleteSuccess }) => {
   );
 };
 
-// ... add your styles here ...
+// --- Updated Styles for ResultCard.jsx ---
+
+const cardStyle = (accentColor) => ({
+  backgroundColor: 'white',
+  padding: '20px',
+  marginBottom: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+  border: `2px solid ${accentColor}`,
+  position: 'relative',
+  cursor: 'pointer', // Makes it look clickable
+  transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out', // Smooth hover
+  display: 'flex',
+  flexDirection: 'column'
+});
+
+const imageStyle = {
+  width: '100%',
+  borderRadius: '4px',
+  marginBottom: '15px',
+  display: 'block',
+  height: 'auto',
+  objectFit: 'contain',
+  maxHeight: '400px',
+  backgroundColor: '#f9f9f9' // Light grey background for document clippings
+};
+
+const badgeContainerStyle = {
+  backgroundColor: '#f7f5ef',
+  border: '1px solid #e0dcc8',
+  borderRadius: '6px',
+  padding: '8px 12px',
+  marginBottom: '10px',
+  display: 'flex',
+  gap: '15px',
+  flexWrap: 'wrap',
+  fontSize: '0.85rem'
+};
+
+const shareItemStyle = {
+  display: 'block',
+  width: '100%',
+  padding: '11px 16px',
+  backgroundColor: 'white',
+  border: 'none',
+  borderBottom: '1px solid #f0f0f0',
+  cursor: 'pointer',
+  textAlign: 'left',
+  fontSize: '0.9rem',
+  color: '#333',
+  fontWeight: 'bold'
+};
 export default ArchiveCard;

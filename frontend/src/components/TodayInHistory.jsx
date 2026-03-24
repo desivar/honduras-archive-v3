@@ -44,25 +44,29 @@ export default function TodayInHistory() {
 
   // Fetch archive records matching today's date string
   useEffect(() => {
-    const fetchTodayRecords = async () => {
-      try {
-        const res = await axios.get('https://honduras-archive.onrender.com/api/archive', {
-          params: { search: day.toString() }
-        });
-        // Filter records whose eventDate or publicationDate contains today's day + month
-        const today = label.toLowerCase();
-        const matches = (res.data.items || []).filter(r => {
-          const ed = (r.eventDate || '').toLowerCase();
-          const pd = (r.publicationDate || '').toLowerCase();
-          return ed.includes(day.toString()) || pd.includes(day.toString());
-        }).slice(0, 3);
-        setArchiveRecords(matches);
-      } catch (e) {
-        // silently fail — the banner still shows quotes
-      }
-    };
-    fetchTodayRecords();
-  }, []);
+  const fetchTodayRecords = async () => {
+    try {
+      // Search for the day number (e.g., "23")
+      const res = await axios.get('https://honduras-archive.onrender.com/api/archive', {
+        params: { search: day.toString() }
+      });
+
+      const records = res.data.items || [];
+      const currentMonth = month.toLowerCase();
+
+      // Filter for records that contain BOTH the day and the month name
+      const matches = records.filter(r => {
+        const dateStr = (r.eventDate || r.publicationDate || '').toLowerCase();
+        return dateStr.includes(day.toString()) && dateStr.includes(currentMonth);
+      });
+
+      setArchiveRecords(matches);
+    } catch (e) {
+      console.error("Fetch error:", e);
+    }
+  };
+  fetchTodayRecords();
+}, [day, month]);
 
   // Rotate quotes every 8 seconds
   useEffect(() => {
