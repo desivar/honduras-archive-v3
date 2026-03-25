@@ -2,6 +2,85 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const TagInput = ({ tags, setTags, placeholder, inputId }) => {
+  const [inputVal, setInputVal] = useState('');
+
+  const addTag = (val) => {
+    const trimmed = val.trim().replace(/,$/, '');
+    if (trimmed) {
+      setTags([...tags, trimmed]);
+      setInputVal('');
+    }
+  };
+
+  return (
+    <div
+      style={{
+        ...inputStyle,
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '6px',
+        alignItems: 'center',
+        minHeight: '44px',
+        height: 'auto',
+        cursor: 'text',
+        padding: '6px 10px',
+      }}
+      onClick={() => document.getElementById(inputId).focus()}
+    >
+      {tags.map((tag, i) => (
+        <span
+          key={i}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: '#e8e4d4',
+            color: '#4a4a2a',
+            border: '1px solid #ACA37E',
+            borderRadius: '999px',
+            padding: '2px 10px',
+            fontSize: '13px',
+            gap: '6px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {tag}
+          <button
+            type="button"
+            onClick={() => setTags(tags.filter((_, idx) => idx !== i))}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#737958', fontSize: '15px', lineHeight: 1, padding: 0,
+            }}
+          >
+            ×
+          </button>
+        </span>
+      ))}
+      <input
+        id={inputId}
+        type="text"
+        value={inputVal}
+        onChange={e => setInputVal(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag(inputVal);
+          } else if (e.key === 'Backspace' && !inputVal && tags.length > 0) {
+            setTags(tags.slice(0, -1));
+          }
+        }}
+        onBlur={() => addTag(inputVal)}
+        placeholder={tags.length === 0 ? placeholder : ''}
+        style={{
+          border: 'none', outline: 'none', background: 'transparent',
+          fontSize: '14px', flex: '1', minWidth: '160px',
+        }}
+      />
+    </div>
+  );
+};
+
 const UploadPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -16,13 +95,13 @@ const UploadPage = () => {
   const [summary, setSummary] = useState('');
   const [image, setImage] = useState(null);
 
-  // Person-record fields
-  const [names, setNames] = useState('');
+  // Person-record fields — now arrays
+  const [names, setNames] = useState([]);
   const [countryOfOrigin, setCountryOfOrigin] = useState('');
 
-  // Historic Event fields
+  // Historic Event fields — peopleInvolved now array
   const [eventName, setEventName] = useState('');
-  const [peopleInvolved, setPeopleInvolved] = useState('');
+  const [peopleInvolved, setPeopleInvolved] = useState([]);
 
   // Business fields
   const [businessName, setBusinessName] = useState('');
@@ -50,9 +129,7 @@ const UploadPage = () => {
 
     if (isHistoricEvent) {
       formData.append('eventName', eventName);
-      formData.append('peopleInvolved', JSON.stringify(
-        peopleInvolved.split(',').map(n => n.trim()).filter(Boolean)
-      ));
+      formData.append('peopleInvolved', JSON.stringify(peopleInvolved));
       formData.append('names', JSON.stringify([]));
     } else if (isBusiness) {
       formData.append('businessName', businessName);
@@ -62,9 +139,7 @@ const UploadPage = () => {
       formData.append('names', JSON.stringify([]));
       formData.append('peopleInvolved', JSON.stringify([]));
     } else {
-      formData.append('names', JSON.stringify(
-        names.split(',').map(n => n.trim()).filter(Boolean)
-      ));
+      formData.append('names', JSON.stringify(names));
       formData.append('countryOfOrigin', countryOfOrigin);
       formData.append('peopleInvolved', JSON.stringify([]));
     }
@@ -94,7 +169,6 @@ const UploadPage = () => {
         Upload New Archive Record
       </h2>
 
-      {/* FIX: All fields are now correctly inside the <form> tag */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Category */}
@@ -123,13 +197,14 @@ const UploadPage = () => {
               />
             </div>
             <div>
-              <label style={labelStyle}>People Involved (separate with commas):</label>
-              <textarea
-                value={peopleInvolved} onChange={e => setPeopleInvolved(e.target.value)}
-                placeholder="e.g. Francisco Morazán, José Cecilio del Valle..."
-                rows="3" style={{ ...inputStyle, resize: 'vertical' }}
+              <label style={labelStyle}>People Involved:</label>
+              <TagInput
+                tags={peopleInvolved}
+                setTags={setPeopleInvolved}
+                placeholder="Type a name and press Enter…"
+                inputId="people-involved-input"
               />
-              <p style={hintStyle}>Separate each name with a comma</p>
+              <p style={hintStyle}>Press Enter or comma after each name</p>
             </div>
           </div>
         )}
@@ -175,11 +250,14 @@ const UploadPage = () => {
         {isPersonRecord && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label style={labelStyle}>Names (separate with commas): *</label>
-              <input
-                type="text" value={names} onChange={e => setNames(e.target.value)}
-                required placeholder="e.g. Sara Gravina, Carlos Izaguirre" style={inputStyle}
+              <label style={labelStyle}>Names: *</label>
+              <TagInput
+                tags={names}
+                setTags={setNames}
+                placeholder="Type a name and press Enter…"
+                inputId="names-input"
               />
+              <p style={hintStyle}>Press Enter or comma after each name</p>
             </div>
             <div>
               <label style={labelStyle}>Person's Origin:</label>
@@ -191,7 +269,7 @@ const UploadPage = () => {
           </div>
         )}
 
-        {/* FIX: Dates section — removed the immediately-closing wrapper div */}
+        {/* Dates */}
         <div>
           <p style={{ margin: '0 0 8px 0', fontSize: '0.8rem', color: '#737958', fontWeight: 'bold', textTransform: 'uppercase' }}>
             📅 Dates
@@ -266,7 +344,6 @@ const UploadPage = () => {
           />
         </div>
 
-        {/* FIX: Button label is now correctly placed between the opening and closing tags */}
         <button
           type="submit"
           disabled={loading}
