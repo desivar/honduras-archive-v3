@@ -31,7 +31,7 @@ const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {
   };
 
   const linkStyle = {
-    color: '#EFE7DD', textDecoration: 'none',
+    color: '#f5f1eb', textDecoration: 'none',
     padding: '7px 0', display: 'block',
     fontSize: '1rem', transition: 'padding-left 0.2s'
   };
