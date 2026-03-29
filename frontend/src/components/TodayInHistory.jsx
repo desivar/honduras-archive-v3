@@ -152,41 +152,27 @@ export default function TodayInHistory() {
           {/* Inner content */}
           <div style={{ position: 'relative', zIndex: 3, padding: '32px 36px 28px' }}>
 
-            {/* ── IMAGE SLOT ── */}
-            <div style={{
-              width: '100%',
-              height: '180px',
-              marginBottom: '24px',
-              borderRadius: '6px',
-              border: '2px dashed rgba(210,175,90,0.35)',
-              background: 'rgba(0,0,0,0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              cursor: 'default',
-            }}>
-              <span style={{ fontSize: '2rem', opacity: 0.4 }}>🖼</span>
-              <p style={{
-                margin: 0,
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: '0.85rem',
-                color: 'rgba(210,175,90,0.5)',
-                letterSpacing: '0.08em',
-                fontStyle: 'italic',
-              }}>
-                Your historical image goes here
-              </p>
-              <p style={{
-                margin: 0,
-                fontFamily: 'monospace',
-                fontSize: '0.7rem',
-                color: 'rgba(210,175,90,0.3)',
-              }}>
-                Replace this div with &lt;img src="..." /&gt;
-              </p>
-            </div>
+          
+           {/* ── HISTORICAL IMAGE ── */}
+<div style={{
+  width: '100%',
+  marginBottom: '24px',
+  borderRadius: '6px',
+  overflow: 'hidden',
+  border: '1px solid rgba(210,175,90,0.35)',
+}}>
+  <img
+    src="/hond-memoirs.png"
+    alt="Archivo Histórico de Honduras"
+    style={{
+      width: '100%',
+      height: '220px',
+      objectFit: 'cover',
+      display: 'block',
+      opacity: 0.92,
+    }}
+  />
+</div>
 
             {/* ── DATE HEADER ── */}
             <div style={{
