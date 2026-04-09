@@ -85,6 +85,11 @@ const UploadPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  // ── Scan state ──────────────────────────────────────────────────────────────
+  const [scanning, setScanning] = useState(false);
+  const [scanDone, setScanDone] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
   // Shared fields
   const [category, setCategory] = useState('Portrait');
   const [eventDate, setEventDate] = useState('');
@@ -95,11 +100,11 @@ const UploadPage = () => {
   const [summary, setSummary] = useState('');
   const [image, setImage] = useState(null);
 
-  // Person-record fields — now arrays
+  // Person-record fields
   const [names, setNames] = useState([]);
   const [countryOfOrigin, setCountryOfOrigin] = useState('');
 
-  // Historic Event fields — peopleInvolved now array
+  // Historic Event fields
   const [eventName, setEventName] = useState('');
   const [peopleInvolved, setPeopleInvolved] = useState([]);
 
@@ -113,6 +118,64 @@ const UploadPage = () => {
   const isBusiness = category === 'Business';
   const isPersonRecord = !isHistoricEvent && !isBusiness;
 
+  // ── Image pick ──────────────────────────────────────────────────────────────
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setScanDone(false);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // ── Claude Vision scan ──────────────────────────────────────────────────────
+  const handleScan = async () => {
+    if (!image) return;
+    setScanning(true);
+    setScanDone(false);
+
+    try {
+      const token = localStorage.getItem('token');
+      const data = new FormData();
+      data.append('image', image);
+
+      const res = await axios.post(
+        'https://honduras-archive.onrender.com/api/archive/scan',
+        data,
+        { headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': token } }
+      );
+
+      const d = res.data;
+
+      // Fill in whatever Claude found — only overwrite if value exists
+      if (d.category)               setCategory(d.category);
+      if (d.eventDate)              setEventDate(d.eventDate);
+      if (d.publicationDate)        setPublicationDate(d.publicationDate);
+      if (d.location)               setLocation(d.location);
+      if (d.newspaperName)          setNewspaperName(d.newspaperName);
+      if (d.pageNumber)             setPageNumber(String(d.pageNumber));
+      if (d.summary)                setSummary(d.summary);
+      if (d.names?.length)          setNames(d.names);
+      if (d.countryOfOrigin)        setCountryOfOrigin(d.countryOfOrigin);
+      if (d.eventName)              setEventName(d.eventName);
+      if (d.peopleInvolved?.length) setPeopleInvolved(d.peopleInvolved);
+      if (d.businessName)           setBusinessName(d.businessName);
+      if (d.businessType)           setBusinessType(d.businessType);
+      if (d.owner)                  setOwner(d.owner);
+      if (d.yearFounded)            setYearFounded(d.yearFounded);
+
+      setScanDone(true);
+    } catch (err) {
+      console.error('Scan error:', err);
+      alert('Scan failed: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -170,6 +233,57 @@ const UploadPage = () => {
       </h2>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+        {/* ── Image upload + Scan button ─────────────────────────────────────── */}
+        <div>
+          <label style={labelStyle}>Upload Image:</label>
+
+          {imagePreview && (
+            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '6px', border: '1px solid #ccc' }}
+              />
+            </div>
+          )}
+
+          <input
+            type="file"
+            onChange={handleImageChange}
+            accept="image/*"
+            style={inputStyle}
+          />
+
+          {/* Scan button — appears only after an image is selected */}
+          {image && (
+            <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                type="button"
+                onClick={handleScan}
+                disabled={scanning}
+                style={{
+                  padding: '9px 20px',
+                  backgroundColor: scanning ? '#aaa' : '#4a7c59',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: scanning ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {scanning ? '🔍 Scanning...' : '🤖 Scan with Claude'}
+              </button>
+
+              {scanDone && (
+                <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.88rem' }}>
+                  ✓ Fields pre-filled — review and correct below
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Category */}
         <div>
@@ -332,15 +446,6 @@ const UploadPage = () => {
               : 'Summary of the record...'
             }
             style={{ ...inputStyle, resize: 'vertical' }}
-          />
-        </div>
-
-        {/* Image */}
-        <div>
-          <label style={labelStyle}>Upload Image:</label>
-          <input
-            type="file" onChange={e => setImage(e.target.files[0])}
-            accept="image/*" style={inputStyle}
           />
         </div>
 
