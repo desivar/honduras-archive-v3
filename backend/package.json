@@ -22,6 +22,7 @@
     "mongoose": "^7.8.9",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "npm": "^11.9.0"
+    "npm": "^11.9.0",
+    "tesseract.js": "^7.0.0"
   }
 }
