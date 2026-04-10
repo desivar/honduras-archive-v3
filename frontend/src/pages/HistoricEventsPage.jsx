@@ -159,7 +159,7 @@ const HistoricEventsPage = () => {
       if (searchTerm) params.append('search', searchTerm);
 
       const res = await axios.get(
-        `https://honduras-archive.onrender.com/api/archive?${params.toString()}`
+        `https://honduras-archive-v2.onrender.com/api/archive?${params.toString()}`
       );
       setEvents(res.data.items || []);
       setCurrentPage(1);
