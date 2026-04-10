@@ -12,7 +12,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'honduras_archive', // Folder name in Cloudinary
+    folder: 'honduras_archive-v2', // Folder name in Cloudinary
     allowed_formats: ['jpg', 'png', 'jpeg'],
   },
 });
