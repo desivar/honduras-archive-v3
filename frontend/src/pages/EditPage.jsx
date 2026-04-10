@@ -100,7 +100,7 @@ const EditPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://honduras-archive.onrender.com/api/archive/${id}`,
+        `https://honduras-archive-v2.onrender.com/api/archive/${id}`,
         {
           category, eventDate, publicationDate,
           location, newspaperName, pageNumber, summary,
