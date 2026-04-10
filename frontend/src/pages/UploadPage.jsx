@@ -174,7 +174,7 @@ const UploadPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://honduras-archive-dev.onrender.com/api/archive', formData, {
+      await axios.post('https://honduras-archive-v2.onrender.com/api/archive', formData, {
         headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': token }
       });
       alert('✅ Record saved to archive successfully!');

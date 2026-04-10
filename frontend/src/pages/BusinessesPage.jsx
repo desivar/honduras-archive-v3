@@ -13,7 +13,7 @@ const BusinessCard = ({ record, onDeleteSuccess }) => {
     if (window.confirm(`Are you sure you want to delete "${record.businessName}"?`)) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`https://honduras-archive.onrender.com/api/archive/${record._id}`, {
+        await axios.delete(`https://honduras-archive-v2.onrender.com/api/archive/${record._id}`, {
           headers: { 'x-auth-token': token }
         });
         alert('Record deleted successfully');

@@ -46,7 +46,7 @@ const EditPage = () => {
 
     const fetchRecord = async () => {
       try {
-        const res = await axios.get(`https://honduras-archive.onrender.com/api/archive/${id}`);
+        const res = await axios.get(`https://honduras-archive-v2.onrender.com/api/archive/${id}`);
         const r = res.data;
 
         if (!r || Object.keys(r).length === 0) {

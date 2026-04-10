@@ -9,8 +9,8 @@ const AdminPanel = () => {
   const fetchData = async () => {
     try {
       const [usersRes, pendingRes] = await Promise.all([
-        axios.get('https://honduras-archive.onrender.com/api/auth/users'),
-        axios.get('https://honduras-archive.onrender.com/api/auth/users/pending')
+        axios.get('https://honduras-archive-v2.onrender.com/api/auth/users'),
+        axios.get('https://honduras-archive-v2.onrender.com/api/auth/users/pending')
       ]);
       setUsers(usersRes.data);
       setPending(pendingRes.data);

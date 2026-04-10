@@ -34,7 +34,7 @@ const ArchiveCard = ({ record, category, onDeleteSuccess }) => {
     e.stopPropagation(); // Prevents the card from opening
     if (window.confirm(`Delete "${title}"?`)) {
       try {
-        await axios.delete(`https://honduras-archive.onrender.com/api/archive/${record._id}`, {
+        await axios.delete(`https://honduras-archive-v2.onrender.com/api/archive/${record._id}`, {
           headers: { 'x-auth-token': token }
         });
         if (onDeleteSuccess) onDeleteSuccess();
