@@ -5,6 +5,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
+const Tesseract = require('tesseract.js');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
@@ -70,10 +71,8 @@ const archiveSchema = new mongoose.Schema({
   pageNumber: String,
   imageUrl: String,
   cloudinaryId: String,
-  // Historic Event fields
   eventName: String,
   peopleInvolved: [String],
-  // ✅ Business fields
   businessName: String,
   businessType: String,
   owner: String,
@@ -83,7 +82,6 @@ const archiveSchema = new mongoose.Schema({
 const Archive = mongoose.model('Archive', archiveSchema);
 
 app.use('/api/auth', authRoutes);
-
 app.get('/', (req, res) => res.send('Honduras Archive API'));
 
 // ── GET all records ───────────────────────────────────────────────────────────
@@ -91,46 +89,68 @@ app.get('/api/archive', async (req, res) => {
   try {
     const { search, letter, category } = req.query;
     let query = {};
-
     if (search && category) {
-      query = {
-        category,
-        $or: [
-          { names: { $regex: search, $options: 'i' } },
-          { countryOfOrigin: { $regex: search, $options: 'i' } },
-          { summary: { $regex: search, $options: 'i' } },
-          { eventName: { $regex: search, $options: 'i' } },
-          { peopleInvolved: { $regex: search, $options: 'i' } },
-          { businessName: { $regex: search, $options: 'i' } },
-          { owner: { $regex: search, $options: 'i' } },
-          { businessType: { $regex: search, $options: 'i' } },
-        ]
-      };
+      query = { category, $or: [
+        { names: { $regex: search, $options: 'i' } },
+        { countryOfOrigin: { $regex: search, $options: 'i' } },
+        { summary: { $regex: search, $options: 'i' } },
+        { eventName: { $regex: search, $options: 'i' } },
+        { peopleInvolved: { $regex: search, $options: 'i' } },
+        { businessName: { $regex: search, $options: 'i' } },
+        { owner: { $regex: search, $options: 'i' } },
+        { businessType: { $regex: search, $options: 'i' } },
+      ]};
     } else if (search) {
-      query = {
-        $or: [
-          { names: { $regex: search, $options: 'i' } },
-          { countryOfOrigin: { $regex: search, $options: 'i' } },
-          { summary: { $regex: search, $options: 'i' } },
-          { eventName: { $regex: search, $options: 'i' } },
-          { peopleInvolved: { $regex: search, $options: 'i' } },
-          { businessName: { $regex: search, $options: 'i' } },
-          { owner: { $regex: search, $options: 'i' } },
-          { businessType: { $regex: search, $options: 'i' } },
-        ]
-      };
+      query = { $or: [
+        { names: { $regex: search, $options: 'i' } },
+        { countryOfOrigin: { $regex: search, $options: 'i' } },
+        { summary: { $regex: search, $options: 'i' } },
+        { eventName: { $regex: search, $options: 'i' } },
+        { peopleInvolved: { $regex: search, $options: 'i' } },
+        { businessName: { $regex: search, $options: 'i' } },
+        { owner: { $regex: search, $options: 'i' } },
+        { businessType: { $regex: search, $options: 'i' } },
+      ]};
     } else if (letter && letter !== 'null') {
       query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
     } else if (category) {
       query = { category };
     }
-
     const items = await Archive.find(query).sort({ createdAt: -1 });
     const totalCount = await Archive.countDocuments();
     const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
-
     res.json({ items, totalCount, lastUpdate: lastRecord ? lastRecord.createdAt : null });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ── POST scan — FREE Tesseract OCR ────────────────────────────────────────────
+// Must stay ABOVE /api/archive/:id route
+app.post('/api/archive/scan', authMiddleware, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
+
+    console.log('🔍 Starting OCR on:', req.file.path);
+
+    const { data: { text } } = await Tesseract.recognize(
+      req.file.path,
+      'spa+eng', // Spanish + English for Honduras newspapers
+      { logger: m => console.log(m.status) }
+    );
+
+    const extractedText = text.trim();
+    console.log('✅ OCR done, chars:', extractedText.length);
+
+    res.json({
+      fullText: extractedText,
+      summary: extractedText,
+      imageUrl: req.file.path,
+      cloudinaryId: req.file.filename
+    });
+
+  } catch (error) {
+    console.error('❌ OCR error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -146,7 +166,7 @@ app.get('/api/archive/:id', async (req, res) => {
   }
 });
 
-// ── POST upload ───────────────────────────────────────────────────────────────
+// ── POST save approved record ─────────────────────────────────────────────────
 app.post('/api/archive', upload.single('image'), async (req, res) => {
   try {
     let namesArray = req.body.names;
@@ -182,7 +202,6 @@ app.put('/api/archive/:id', async (req, res) => {
       summary, countryOfOrigin, eventName, peopleInvolved,
       businessName, businessType, owner, yearFounded
     } = req.body;
-
     let namesArray = names;
     if (typeof namesArray === 'string') {
       try { namesArray = JSON.parse(namesArray); }
@@ -193,15 +212,12 @@ app.put('/api/archive/:id', async (req, res) => {
       try { peopleArray = JSON.parse(peopleArray); }
       catch { peopleArray = peopleArray ? peopleArray.split(',').map(n => n.trim()) : []; }
     }
-
     const updatedItem = await Archive.findByIdAndUpdate(
       req.params.id,
-      {
-        title, names: namesArray, fullText, category, location,
+      { title, names: namesArray, fullText, category, location,
         eventDate, publicationDate, newspaperName, pageNumber,
         summary, countryOfOrigin, eventName, peopleInvolved: peopleArray,
-        businessName, businessType, owner, yearFounded
-      },
+        businessName, businessType, owner, yearFounded },
       { new: true }
     );
     if (!updatedItem) return res.status(404).json({ error: 'Record not found' });
