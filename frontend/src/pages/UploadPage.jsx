@@ -108,7 +108,8 @@ const UploadPage = () => {
       const res = await axios.post(
         'https://honduras-archive-v2.onrender.com/api/archive/scan',
         data,
-        { headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': token } }
+         // ✅ Replace with this
+        { headers: { 'x-auth-token': token } }
       );
 
       const d = res.data;
