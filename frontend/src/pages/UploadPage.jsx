@@ -129,6 +129,52 @@ const UploadPage = () => {
     }
   };
 
+  // ── AI Auto-fill ────────────────────────────────────────────────────────────
+  const handleAnalyze = async () => {
+         if (!image) return;
+          setScanning(true);
+          setScanDone(false);
+          setApproved(false);
+     try {
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(image);
+      });
+
+       const res = await axios.post(
+        'https://honduras-archive-v2.onrender.com/api/archive/analyze',
+        { image: base64, category },
+        { headers: { 'x-auth-token': localStorage.getItem('token') } }
+      );
+       const d = res.data;
+
+      if (d.summary)                { setSummary(d.summary); }
+      if (d.eventDate)              { setEventDate(d.eventDate); }
+      if (d.publicationDate)        { setPublicationDate(d.publicationDate); }
+      if (d.location)               { setLocation(d.location); }
+      if (d.newspaperName)          { setNewspaperName(d.newspaperName); }
+      if (d.pageNumber)             { setPageNumber(d.pageNumber); }
+      if (d.names?.length)          { setNames(d.names); }
+      if (d.countryOfOrigin)        { setCountryOfOrigin(d.countryOfOrigin); }
+      if (d.eventName)              { setEventName(d.eventName); }
+      if (d.peopleInvolved?.length) { setPeopleInvolved(d.peopleInvolved); }
+      if (d.businessName)           { setBusinessName(d.businessName); }
+      if (d.businessType)           { setBusinessType(d.businessType); }
+      if (d.owner)                  { setOwner(d.owner); }
+      if (d.yearFounded)            { setYearFounded(d.yearFounded); }
+      if (d.imageUrl)               { setScannedImageUrl(d.imageUrl); }
+      if (d.cloudinaryId)           { setScannedCloudinaryId(d.cloudinaryId); }
+
+       setScanDone(true);
+    } catch (err) {
+      console.error('AI Analyze error:', err);
+      alert('Analysis failed: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setScanning(false);
+    }
+  };
   // ── Submit — only works after human approves ────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
