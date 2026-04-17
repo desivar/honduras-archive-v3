@@ -38,11 +38,7 @@ const TagInput = ({ tags, setTags, placeholder, inputId }) => {
 const UploadPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-   try {
-    const token = localStorage.getItem('token');
-    console.log('TOKEN BEING SENT:', token); // ← add just this line
-    const data = new FormData();
-    data.append('image', image);
+  
    
 
   // ── Scan / review state ─────────────────────────────────────────────────────
@@ -109,6 +105,7 @@ const UploadPage = () => {
 
     try {
       const token = localStorage.getItem('token');
+       console.log('TOKEN BEING SENT:', token); // ← add just this line
       const data = new FormData();
       data.append('image', image);
 
