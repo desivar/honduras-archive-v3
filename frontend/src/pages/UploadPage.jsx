@@ -110,7 +110,7 @@ const UploadPage = () => {
       data.append('image', image);
 
       const res = await axios.post(
-        'https://honduras-archive-v2.onrender.com/api/archive/scan',
+         'https://honduras-archive-v2.onrender.com/api/archive/analyze',
         data,
          // ✅ Replace with this
         { headers: { 'x-auth-token': token } }
