@@ -209,7 +209,7 @@ export default function TodayInHistory() {
                  display: 'flex',
                  justifyContent: 'center' }}>
                 <img src={record.imageUrl} alt={displayName}
-                 style={{ width: '60%', 
+                 style={{ width: '100%', 
                  height: 'auto', maxHeight: '160px', 
                  objectFit: 'contain',
                  opacity: 0.85, display: 'block' }} />
