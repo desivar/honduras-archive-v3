@@ -46,7 +46,7 @@ const EditPage = () => {
 
     const fetchRecord = async () => {
       try {
-        const res = await axios.get(`https://honduras-archive-v2.onrender.com/api/archive/${id}`);
+        const res = await axios.get(`https://honduras-archive-v3.onrender.com/api/archive/${id}`);
         const r = res.data;
 
         if (!r || Object.keys(r).length === 0) {
@@ -100,7 +100,7 @@ const EditPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://honduras-archive-v2.onrender.com/api/archive/${id}`,
+        `https://honduras-archive-v3.onrender.com/api/archive/${id}`,
         {
           category, eventDate, publicationDate,
           location, newspaperName, pageNumber, summary,

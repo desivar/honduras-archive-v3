@@ -14,7 +14,7 @@ const GenealogistDashboard = ({ onLogout }) => {
     const fetchDashboard = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://honduras-archive-v2.onrender.com/api/auth/dashboard', {
+        const res = await axios.get('https://honduras-archive-v3.onrender.com/api/auth/dashboard', {
           headers: { 'x-auth-token': token }
         });
         setData(res.data);
@@ -31,7 +31,7 @@ const GenealogistDashboard = ({ onLogout }) => {
     try {
       const token = localStorage.getItem('token');
       const sessionIndex = localStorage.getItem('sessionIndex');
-      await axios.post('https://honduras-archive-v2.onrender.com/api/auth/logout',
+      await axios.post('https://honduras-archive-v3.onrender.com/api/auth/logout',
         { sessionIndex: parseInt(sessionIndex) },
         { headers: { 'x-auth-token': token } }
       );
@@ -50,7 +50,7 @@ const GenealogistDashboard = ({ onLogout }) => {
   const removeBookmark = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`https://honduras-archive.onrender.com/api/auth/activity/bookmark/${recordId}`,
+      await axios.post(`https://honduras-archive-v3.onrender.com/api/auth/activity/bookmark/${recordId}`,
         {}, { headers: { 'x-auth-token': token } }
       );
       setData(prev => ({
@@ -65,7 +65,7 @@ const GenealogistDashboard = ({ onLogout }) => {
   const saveNote = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`https://honduras-archive.onrender.com/api/auth/activity/note/${recordId}`,
+      await axios.post(`https://honduras-archive-v3.onrender.com/api/auth/activity/note/${recordId}`,
         { text: noteText },
         { headers: { 'x-auth-token': token } }
       );
