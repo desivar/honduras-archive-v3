@@ -126,7 +126,7 @@ export default function TodayInHistory() {
           {['top:12px;left:14px','top:12px;right:14px;transform:scaleX(-1)',
             'bottom:12px;left:14px;transform:scaleY(-1)','bottom:12px;right:14px;transform:scale(-1)'].map((s, i) => (
             <div key={i} style={{
-              position: 'absolute', color: 'rgba(210,175,90,0.5)', fontSize: '1.4rem',
+              position: 'absolute', color: 'rgba(199, 145, 19, 0.75)', fontSize: '1.4rem',
               fontFamily: 'serif', lineHeight: 1, zIndex: 2,
               ...Object.fromEntries(s.split(';').map(p => { const [k,v]=p.split(':'); return [k.trim(), v?.trim()]; }).filter(([k])=>k))
             }}>❧</div>
@@ -152,7 +152,7 @@ export default function TodayInHistory() {
                 {getTodayLabel()}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '14px' }}>
-                <div style={{ height: '1px', width: '60px', background: 'linear-gradient(to right, transparent, rgba(210,175,90,0.6))' }} />
+                <div style={{ height: '1px', width: '60px', background: 'linear-gradient(to right, transparent, rgba(182, 171, 143, 0.81))' }} />
                 <span style={{ color: 'rgba(210,175,90,0.7)', fontSize: '0.65rem' }}>✦</span>
                 <div style={{ height: '1px', width: '60px', background: 'linear-gradient(to left, transparent, rgba(210,175,90,0.6))' }} />
               </div>
