@@ -12,7 +12,7 @@ const PortraitGallery = () => {
       setLoading(true);
       try {
         // Updated to use /api/archive to match your other working pages
-        const res = await axios.get('https://honduras-archive-v2.onrender.com/api/archive?category=Portrait');
+        const res = await axios.get('https://honduras-archive-v3.onrender.com/api/archive?category=Portrait');
         // Ensure we target .items if your backend uses pagination
         setPortraits(res.data.items || res.data || []);
       } catch (err) {

@@ -39,7 +39,7 @@ export default function TodayInHistory() {
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const res = await axios.get('https://honduras-archive-v2.onrender.com/api/archive');
+        const res = await axios.get('https://honduras-archive-v3.onrender.com/api/archive');
         const items = res.data.items || [];
         if (items.length === 0) { setLoading(false); return; }
         setRecord(items[getDailyIndex(items.length)]);

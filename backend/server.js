@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'honduras_archive-v2_dev_secret';
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://honduras-archive-v2-1.onrender.com',
+  origin: process.env.FRONTEND_URL || 'https://honduras-archive-v3',
   credentials: true
 }));
 

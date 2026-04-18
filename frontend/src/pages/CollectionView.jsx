@@ -16,7 +16,7 @@ const CollectionView = ({ type }) => {  // 👈 type comes from props, not usePa
         const queryParam = type === 'letter' ? 'letter' : 'category';
         
         // 👇 Fix 2: correct API endpoint + res.data.items
-        const res = await axios.get(`https://honduras-archive-v2.onrender.com/api/archive?${queryParam}=${value}`);
+        const res = await axios.get(`https://honduras-archive-v3.onrender.com/api/archive?${queryParam}=${value}`);
         setResults(res.data.items);  // 👈 Fix 3: was res.data
       } catch (err) {
         console.error("Fetch error:", err);

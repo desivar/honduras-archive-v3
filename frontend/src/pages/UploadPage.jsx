@@ -113,7 +113,7 @@ const UploadPage = () => {
       data.append('category', category); // send category so parser focuses correctly
 
       const res = await axios.post(
-        'https://honduras-archive-v2.onrender.com/api/archive/analyze',
+        'https://honduras-archive-v3.onrender.com/api/archive/analyze',
         data,
         { headers: { 'x-auth-token': token } }
       );

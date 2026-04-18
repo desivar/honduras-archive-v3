@@ -9,8 +9,8 @@ const AdminPanel = () => {
   const fetchData = async () => {
     try {
       const [usersRes, pendingRes] = await Promise.all([
-        axios.get('https://honduras-archive-v2.onrender.com/api/auth/users'),
-        axios.get('https://honduras-archive-v2.onrender.com/api/auth/users/pending')
+        axios.get('https://honduras-archive-v3.onrender.com/api/auth/users'),
+        axios.get('https://honduras-archive-v3.onrender.com/api/auth/users/pending')
       ]);
       setUsers(usersRes.data);
       setPending(pendingRes.data);
@@ -23,7 +23,7 @@ const AdminPanel = () => {
 
   const changeRole = async (userId, newRole) => {
     try {
-      await axios.put(`https://honduras-archive-v2.onrender.com/api/auth/users/role/${userId}`, { role: newRole });
+      await axios.put(`https://honduras-archive-v3.onrender.com/api/auth/users/role/${userId}`, { role: newRole });
       alert('Role updated!');
       fetchData();
     } catch {
@@ -33,7 +33,7 @@ const AdminPanel = () => {
 
   const approveUser = async (userId, status) => {
     try {
-      await axios.put(`https://honduras-archive-v2.onrender.com/api/auth/users/approve/${userId}`, { status });
+      await axios.put(`https://honduras-archive-v3.onrender.com/api/auth/users/approve/${userId}`, { status });
       alert(`User ${status}!`);
       fetchData();
     } catch {
