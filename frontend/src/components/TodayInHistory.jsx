@@ -201,26 +201,26 @@ export default function TodayInHistory() {
                     overflow: 'hidden',
                     cursor: 'pointer',
                   }}>
-                   {/* Record image */}
-                   {record.imageUrl && (
-                   <div style={{ width: '100%',
-                    background: 'rgba(0,0,0,0.2)',
-                     borderBottom: '1px solid rgba(210,175,90,0.2)', 
-                     display: 'flex',
-                      justifyContent: 'center' }}>
-                    <img src={record.imageUrl} 
-                    alt={displayName}
-                    style={{ width: '100%', 
-                    height: 'auto', 
-                    objectFit: 'contain', 
-                    opacity: 0.85, 
-                    display: 'block' }} />
-                   </div>
-                    )}
+                 {/* Record image */}
+                 {record.imageUrl && (
+                 <div style={{ width: '100%', 
+                 background: 'rgba(0,0,0,0.2)', 
+                 borderBottom: '1px solid rgba(210,175,90,0.2)',
+                 display: 'flex',
+                 justifyContent: 'center' }}>
+                <img src={record.imageUrl} alt={displayName}
+                 style={{ width: '60%', 
+                 height: 'auto', maxHeight: '160px', 
+                 objectFit: 'contain',
+                 opacity: 0.85, display: 'block' }} />
+                 </div>
+                
+                 )}
 
-                    {/* Record info */}
-                    <div style={{ padding: '16px 20px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                 {/* Record info */}
+                 <div style={{ padding: '8px 12px' }}></div>
+
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ flex: 1 }}>
                           {/* Category badge */}
                           <span style={{
@@ -262,7 +262,7 @@ export default function TodayInHistory() {
                         </span>
                       </div>
                     </div>
-                  </div>
+                
                 </a>
               )}
             </div>
