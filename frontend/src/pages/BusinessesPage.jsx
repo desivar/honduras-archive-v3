@@ -147,7 +147,7 @@ const BusinessesPage = () => {
     try {
       const params = new URLSearchParams({ category: 'Business' });
       if (searchTerm) params.append('search', searchTerm);
-      const res = await axios.get(`https://honduras-archive-v2.onrender.com/api/archive?${params.toString()}`);
+      const res = await axios.get(`https://honduras-archive-v3.onrender.com/api/archive?${params.toString()}`);
       setBusinesses(res.data.items || []);
       setCurrentPage(1);
     } catch (err) {
