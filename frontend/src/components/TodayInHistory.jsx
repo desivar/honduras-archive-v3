@@ -115,7 +115,7 @@ export default function TodayInHistory() {
 
             {/* Header image */}
             <div style={{ width: '100%', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(212,172,13,0.4)' }}>
-              <img src="/blueher.png" alt="Archivo Histórico de Honduras"
+              <img src="/honmemo.png" alt="Archivo Histórico de Honduras"
                 style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block', opacity: 0.9 }} />
             </div>
 
