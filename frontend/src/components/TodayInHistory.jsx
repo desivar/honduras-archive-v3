@@ -186,13 +186,40 @@ export default function TodayInHistory() {
                     cursor: 'pointer',
                   }}
                 >
-                  {/* Record image */}
-                  {record.imageUrl && (
-                    <div style={{ width: '100%', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(212,172,13,0.2)', display: 'flex', justifyContent: 'center' }}>
-                      <img src={record.imageUrl} alt={displayName}
-                        style={{ width: '60%', height: 'auto', maxHeight: '160px', objectFit: 'contain', opacity: 0.88, display: 'block' }} />
-                    </div>
-                  )}
+                {/* Record image */}
+                {record.imageUrl && (
+                <div style={{ width: '100%', 
+                background: 'rgba(0,0,0,0.2)', 
+                borderBottom: '1px solid rgba(212,172,13,0.2)', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'stretch' }}>
+                {/* Left faded repeat */}
+                <div style={{ flex: 1, 
+                  backgroundImage: `url(${record.imageUrl})`, 
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  opacity: 0.15,
+                  filter: 'blur(8px)' }} />
+                {/* Main image */}
+                <img src={record.imageUrl} 
+                alt={displayName}
+                style={{ width: '40%', 
+                height: 'auto', 
+                maxHeight: '220px', 
+                objectFit: 'contain',
+                opacity: 0.92,
+                display: 'block',
+                zIndex: 1 }} />
+               {/* Right faded repeat */}
+               <div style={{ flex: 1, 
+                backgroundImage: `url(${record.imageUrl})`, 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+                 opacity: 0.15, 
+                 filter: 'blur(8px)' }} />
+                </div>
+                )}
 
                   {/* Record info */}
                   <div style={{ padding: '10px 14px' }}>
