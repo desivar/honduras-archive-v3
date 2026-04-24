@@ -34,7 +34,7 @@ const TagInput = ({ tags, setTags, placeholder, inputId }) => {
   );
 };
 
-const UploadPage = () => {
+const UploadPage = ({ onRecordSaved }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -198,8 +198,9 @@ const UploadPage = () => {
       await axios.post('https://honduras-archive-v3.onrender.com/api/archive', formData, {
         headers: { 'x-auth-token': token }
       });
-      alert('✅ Record saved to archive successfully!');
-      handleReset();
+     alert('✅ Record saved to archive successfully!');
+     handleReset();
+     if (onRecordSaved) await onRecordSaved();
       navigate('/');
     } catch (err) {
       console.error(err);
