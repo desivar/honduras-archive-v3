@@ -88,7 +88,8 @@ function App() {
 
             {/* Admin — pass refreshStats so sidebar count updates after upload */}
             <Route path="/upload" element={isAdmin ? <UploadPage onRecordSaved={refreshStats} /> : <Navigate to="/login" replace />} />
-            <Route path="/admin" element={isAdmin ? <AdminPanel /> : <Navigate to="/login" replace />} />
+        
+            <Route path="/admin" element={isAdmin ? <AdminPanel /> : <Navigate to="/login" state={{ from: '/admin' }} replace />} />
             <Route path="/edit/:id" element={isAdmin || loading ? <EditPage /> : <Navigate to="/login" replace />} />
 
             {/* Genealogist */}
