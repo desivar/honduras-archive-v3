@@ -4,18 +4,29 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import LanguageToggle from './LanguageToggle';
 
-// ── Honduras National Pride Palette ──────────────────────────────────────────
-// Deep blue:   #0F3460  (dark navy — flag blue)
-// Mid blue:    #1A5276  (sidebar base)
-// Light blue:  #2E86C1  (accents)
-// White:       #F8FBFF  (text)
-// Gold:        #D4AC0D  (highlights)
-// Nature green:#2E7D32  (special links)
-// Soft green:  #4CAF50  (hover states)
-
 const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  // ── Live count — updates every 60s and when parent refreshes ───────────────
+  const [liveCount, setLiveCount] = useState(totalCount || 0);
+  const [liveUpdate, setLiveUpdate] = useState(lastUpdate);
+
+ 
+
+  // Also self-refresh every 60 seconds
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get('https://honduras-archive-v3.onrender.com/api/archive');
+        setLiveCount(res.data.totalCount || 0);
+        setLiveUpdate(res.data.lastUpdate || null);
+      } catch (e) { console.error(e); }
+    };
+    fetchStats();
+    const interval = setInterval(fetchStats, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     if (user && user.role === 'genealogist') {
@@ -104,7 +115,7 @@ const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {
         <LanguageToggle />
       </div>
 
-      {/* Stats */}
+      {/* Stats — uses liveCount and liveUpdate */}
       <div style={{
         backgroundColor: 'rgba(212,172,13,0.15)',
         padding: '10px 12px',
@@ -113,11 +124,11 @@ const Sidebar = ({ user, onLogout, totalCount, lastUpdate }) => {
         borderLeft: '4px solid #D4AC0D',
       }}>
         <p style={{ margin: 0, fontSize: '0.82rem', color: '#F8FBFF' }}>
-          <strong style={{ color: '#D4AC0D' }}>{t('sidebar.magnitude')}:</strong> {totalCount || 0} {t('sidebar.records')}
+          <strong style={{ color: '#D4AC0D' }}>{t('sidebar.magnitude')}:</strong> {liveCount} {t('sidebar.records')}
         </p>
-        {lastUpdate && (
+        {liveUpdate && (
           <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#F8FBFF' }}>
-            <strong style={{ color: '#D4AC0D' }}>{t('sidebar.lastUpdate')}:</strong> {new Date(lastUpdate).toLocaleDateString()}
+            <strong style={{ color: '#D4AC0D' }}>{t('sidebar.lastUpdate')}:</strong> {new Date(liveUpdate).toLocaleDateString()}
           </p>
         )}
       </div>
