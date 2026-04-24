@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = ({ onLogin }) => {
@@ -8,6 +8,8 @@ const LoginPage = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();                    // ✅ inside component
+  const from = location.state?.from || null;         // ✅ inside component
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +26,6 @@ const LoginPage = ({ onLogin }) => {
         const token = response.data.token;
         const sessionIndex = response.data.sessionIndex;
 
-        // Store user, token, session start info
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', token);
         localStorage.setItem('sessionStart', new Date().toISOString());
@@ -34,8 +35,10 @@ const LoginPage = ({ onLogin }) => {
 
         if (onLogin) onLogin(userData);
 
-        // Role-based redirect
-        if (userData.role === 'admin') {
+        // ✅ If came from a specific page (e.g. /admin link in email) go back there
+        if (from) {
+          navigate(from, { replace: true });
+        } else if (userData.role === 'admin') {
           navigate('/upload');
         } else if (userData.role === 'genealogist') {
           navigate('/dashboard');
@@ -52,15 +55,15 @@ const LoginPage = ({ onLogin }) => {
 
   return (
     <div style={{
-      backgroundColor: '#EFE7DD', minHeight: '100vh',
+      backgroundColor: '#EAF0F7', minHeight: '100vh',
       display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px'
     }}>
       <div style={{
         backgroundColor: 'white', padding: '40px', borderRadius: '12px',
-        border: '2px solid #737958', maxWidth: '400px', width: '100%',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        border: '2px solid #1A5276', maxWidth: '400px', width: '100%',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
       }}>
-        <h2 style={{ color: '#737958', textAlign: 'center', marginBottom: '10px', fontSize: '1.8rem' }}>
+        <h2 style={{ color: '#0F3460', textAlign: 'center', marginBottom: '10px', fontSize: '1.8rem', fontFamily: 'serif' }}>
           Recuerdos de Honduras
         </h2>
         <p style={{ textAlign: 'center', color: '#666', marginBottom: '30px', fontSize: '0.95rem' }}>
@@ -69,7 +72,7 @@ const LoginPage = ({ onLogin }) => {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
+            <label style={{ display: 'block', color: '#0F3460', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
               Username
             </label>
             <input type="text" value={username} onChange={e => setUsername(e.target.value)}
@@ -77,7 +80,7 @@ const LoginPage = ({ onLogin }) => {
           </div>
 
           <div style={{ marginBottom: '25px' }}>
-            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
+            <label style={{ display: 'block', color: '#0F3460', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem' }}>
               Password
             </label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
@@ -94,18 +97,19 @@ const LoginPage = ({ onLogin }) => {
           )}
 
           <button type="submit" disabled={loading} style={{
-            width: '100%', backgroundColor: loading ? '#999' : '#737958',
+            width: '100%',
+            background: loading ? '#aaa' : 'linear-gradient(135deg, #1A5276, #0F3460)',
             color: 'white', border: 'none', padding: '14px', borderRadius: '6px',
             fontSize: '1.05rem', fontWeight: 'bold',
             cursor: loading ? 'not-allowed' : 'pointer'
           }}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Signing in...' : '🔐 Sign In'}
           </button>
         </form>
 
         <div style={{ marginTop: '16px', textAlign: 'center' }}>
           <span style={{ color: '#666', fontSize: '0.9rem' }}>Don't have an account? </span>
-          <Link to="/register" style={{ color: '#737958', fontWeight: 'bold', fontSize: '0.9rem' }}>
+          <Link to="/register" style={{ color: '#1A5276', fontWeight: 'bold', fontSize: '0.9rem' }}>
             Register
           </Link>
         </div>
