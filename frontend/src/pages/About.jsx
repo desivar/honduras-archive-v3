@@ -160,7 +160,7 @@ const About = () => {
           {[
             { label: 'LinkedIn', icon: '🔗', url: 'https://www.linkedin.com/in/desire-delmy-vargas-tinoco-853381247/', color: '#0077b5' },
             { label: 'GitHub', icon: '💻', url: 'https://github.com/desivar', color: '#333' },
-            { label: 'Email', icon: '✉️', url: 'softwareengineerdesiv@gmail.com', color: '#737958' }
+            { label: 'Email', icon: '✉️', url: 'jillian_desire@yahoo.es', color: '#737958' }
           ].map((social, i) => (
             <a 
               key={i}
