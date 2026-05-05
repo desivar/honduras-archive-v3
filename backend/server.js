@@ -174,8 +174,8 @@ app.post('/api/archive/analyze', authMiddleware, upload.single('image'), async (
 
     // Newspaper name
     const knownPapers = ['El Cronista','La Prensa','El Heraldo','El Tiempo',
-      'La Tribuna','Diario El Día','El Pueblo','La Época','El Comercio',
-      'Diario de Honduras','La Gaceta','El Sol','El Nacional','Revista Tegucigalpa'];
+      'La Tribuna','Revista Atlántida','El Pueblo','La Época','El Comercio',
+      'Diario de Honduras','La Gaceta','Amapala','El Nacional','Revista Tegucigalpa'];
     let newspaperName = '';
     for (const paper of knownPapers) {
       if (lower.includes(paper.toLowerCase())) { newspaperName = paper; break; }
@@ -206,7 +206,7 @@ app.post('/api/archive/analyze', authMiddleware, upload.single('image'), async (
     // Category auto-detection (only overrides if user left it as News)
     let detectedCategory = category;
     if (category === 'News') {
-      if (/falleci|defunci|muerte|murió|luto|sepelio|entierro|funeral/.test(lower)) detectedCategory = 'Death';
+      if (/falleci|defuncion|muerte|murió|luto|sepelio|entierro|funeral/.test(lower)) detectedCategory = 'Death';
       else if (/nacimiento|nació|bautizo|bautismo/.test(lower)) detectedCategory = 'Birth';
       else if (/matrimonio|casamiento|nupcias|boda|desposaron/.test(lower)) detectedCategory = 'Marriage';
       else if (/batalla|guerra|revolución|elecciones|congreso|decreto/.test(lower)) detectedCategory = 'Historic Event';

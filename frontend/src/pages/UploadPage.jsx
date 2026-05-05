@@ -115,7 +115,12 @@ const UploadPage = ({ onRecordSaved }) => {
       const res = await axios.post(
         'https://honduras-archive-v3.onrender.com/api/archive/analyze',
         data,
-        { headers: { 'x-auth-token': token } }
+        { 
+  headers: { 
+    'Authorization': `Bearer ${token}`,
+    'x-auth-token': token // Keep this too just in case
+  } 
+}
       );
 
       const d = res.data;
