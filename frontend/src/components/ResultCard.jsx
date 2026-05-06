@@ -13,13 +13,22 @@ const ResultCard = ({ record, category, onDeleteSuccess }) => {
   const isAdmin = user && user.role === 'admin';
 
   // Determine Accent Color
-  const isBusiness = record.category === 'Business' || category === 'Business';
-  const accentColor = isBusiness ? '#586379' : '#737958';
+const isBusinessOrEvent = record.category === 'Business' || 
+                          record.category === 'Historic Event' || 
+                          category === 'Business';
+                          
+const accentColor = isBusinessOrEvent ? '#586379' : '#737958';
 
   // 1. Unified Logic for different collections
   const getInfo = () => {
-    const currentCat = category || record.category;
-    switch (currentCat) {
+  const currentCat = category || record.category;
+  switch (currentCat) {
+    case 'Historic Event':
+      return { 
+        title: record.eventName || 'Historic Event', 
+        icon: '🏛️', 
+        sub: record.eventDate || record.location 
+      };
       case 'Business':
         return { title: record.businessName || 'Unnamed Business', icon: '🏢', sub: record.businessType };
       case 'Portrait':
