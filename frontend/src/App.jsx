@@ -90,7 +90,16 @@ function App() {
             <Route path="/upload" element={isAdmin ? <UploadPage onRecordSaved={refreshStats} /> : <Navigate to="/login" replace />} />
         
             <Route path="/admin" element={isAdmin ? <AdminPanel /> : <Navigate to="/login" state={{ from: '/admin' }} replace />} />
-            <Route path="/edit/:id" element={isAdmin || loading ? <EditPage /> : <Navigate to="/login" replace />} />
+            <Route 
+                  path="/edit/:id" 
+                  element={
+                     loading 
+                      ? <p style={{ padding: '40px', textAlign: 'center' }}>⏳ Loading...</p>
+                      : isAdmin 
+                       ? <EditPage /> 
+                       : <Navigate to="/login" replace />
+                        } 
+                       />
 
             {/* Genealogist */}
             <Route path="/dashboard" element={isGenealogist ? <GenealogistDashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
