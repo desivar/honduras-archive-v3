@@ -73,12 +73,18 @@ const accentColor = isBusinessOrEvent ? '#586379' : '#737958';
   };
 
 const copyCitation = (e) => {
-  e.preventDefault();
+  e.preventDefault(); // Note: e.stopPropagation() might be better if this is inside a clickable card
+  
   const source = record.newspaperName || 'Archivo Nacional';
   const date = record.publicationDate || record.eventDate || 'n.d.';
-  const url = `${window.location.origin}/record/${record._id}`; // 👈 moved here
-  navigator.clipboard.writeText(`${title} (${date}). ${record.category}. ${record.location || 'Honduras'}: ${source}. ${url}`);
-  alert('APA Citation copied!');
+  const location = record.location || 'Honduras';
+  const url = `${window.location.origin}/record/${record._id}`;
+  
+  // Chicago Style: "Title," Source (Location), Date. URL.
+  const citation = `"${title}," ${source} (${location}), ${date}. ${url}`;
+  
+  navigator.clipboard.writeText(citation);
+  alert('Chicago Style Citation copied!');
 };
 
   return (
