@@ -29,15 +29,20 @@ const BusinessCard = ({ record, onDeleteSuccess }) => {
     window.location.href = `/edit/${record._id}`;
   };
 
-  const copyCitation = (e) => {
-    e.stopPropagation(); // prevent card click
-    const source = record.newspaperName || 'Archivo Nacional';
-    const page = record.pageNumber || 's/n';
-    const date = record.publicationDate || record.eventDate || record.yearFounded || 'n.d.';
-    const citation = `${record.businessName} (${date}). Business Record. ${record.location || 'Honduras'}: ${source}, p. ${page}.`;
-    navigator.clipboard.writeText(citation);
-    alert('APA Citation copied to clipboard!');
-  };
+const copyCitation = (e) => {
+  e.stopPropagation(); // prevent card click
+  
+  const source = record.newspaperName || 'Archivo Nacional';
+  const page = record.pageNumber ? `, p. ${record.pageNumber}` : '';
+  const location = record.location || 'Honduras';
+  const date = record.publicationDate || record.eventDate || record.yearFounded || 'n.d.';
+  
+  // Chicago Format: "Business Name," Source Name (Location), Date, Page.
+  const citation = `"${record.businessName}," ${source} (${location}), ${date}${page}.`;
+
+  navigator.clipboard.writeText(citation);
+  alert('Chicago Style Citation copied to clipboard!');
+};
 
   return (
     <div
