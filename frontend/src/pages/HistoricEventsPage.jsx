@@ -31,14 +31,19 @@ const EventCard = ({ record, onDeleteSuccess }) => {
   };
 
   const copyCitation = (e) => {
-    e.stopPropagation(); // 5. Prevent card click
-    const source = record.newspaperName || 'Archivo Nacional';
-    const page = record.pageNumber || 's/n';
-    const dateForCitation = record.publicationDate || record.eventDate || 'n.d.';
-    const citation = `${record.eventName} (${dateForCitation}). Historic Event. ${record.location || 'Honduras'}: ${source}, p. ${page}.`;
-    navigator.clipboard.writeText(citation);
-    alert('APA Citation copied to clipboard!');
-  };
+  e.stopPropagation(); 
+  
+  const source = record.newspaperName || 'Archivo Nacional';
+  const page = record.pageNumber ? `, p. ${record.pageNumber}` : '';
+  const location = record.location || 'Honduras';
+  const dateForCitation = record.publicationDate || record.eventDate || 'n.d.';
+  
+  // Chicago Format: "Event Name," Source Name (Location), Date, Page.
+  const citation = `"${record.eventName || 'Event'}," ${source} (${location}), ${dateForCitation}${page}.`;
+
+  navigator.clipboard.writeText(citation);
+  alert('Chicago Style Citation copied to clipboard!');
+};
 
   return (
     <div 
