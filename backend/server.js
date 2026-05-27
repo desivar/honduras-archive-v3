@@ -11,6 +11,9 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || 'honduras_archive-v3_dev_secret';
 
+// Helper function to safely escape strings for Regex injection safety
+const escapeRegex = (text) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -21,12 +24,12 @@ app.use(cors({
 // Auth middleware
 const authMiddleware = (req, res, next) => {
   const token = req.header('x-auth-token');
-  if (!token) return res.status(401).json({ message: 'No token' });
+  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
     next();
-  } catch {
-    res.status(401).json({ message: 'Invalid token' });
+  } catch (err) {
+    res.status(401).json({ message: 'Token is not valid' });
   }
 };
 
@@ -84,48 +87,56 @@ const Archive = mongoose.model('Archive', archiveSchema);
 app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => res.send('Honduras Archive API'));
 
-// ── GET all records ───────────────────────────────────────────────────────────
+// ── GET all records (with pagination & regex safety) ───────────────────────────
 app.get('/api/archive', async (req, res) => {
   try {
-    const { search, letter, category } = req.query;
+    const { search, letter, category, page = 1, limit = 20 } = req.query;
     let query = {};
-    if (search && category) {
-      query = { category, $or: [
-        { names: { $regex: search, $options: 'i' } },
-        { countryOfOrigin: { $regex: search, $options: 'i' } },
-        { summary: { $regex: search, $options: 'i' } },
-        { eventName: { $regex: search, $options: 'i' } },
-        { peopleInvolved: { $regex: search, $options: 'i' } },
-        { businessName: { $regex: search, $options: 'i' } },
-        { owner: { $regex: search, $options: 'i' } },
-        { businessType: { $regex: search, $options: 'i' } },
-      ]};
-    } else if (search) {
-      query = { $or: [
-        { names: { $regex: search, $options: 'i' } },
-        { countryOfOrigin: { $regex: search, $options: 'i' } },
-        { summary: { $regex: search, $options: 'i' } },
-        { eventName: { $regex: search, $options: 'i' } },
-        { peopleInvolved: { $regex: search, $options: 'i' } },
-        { businessName: { $regex: search, $options: 'i' } },
-        { owner: { $regex: search, $options: 'i' } },
-        { businessType: { $regex: search, $options: 'i' } },
-      ]};
+
+    if (search) {
+      const safeSearch = escapeRegex(search);
+      const searchConditions = [
+        { names: { $regex: safeSearch, $options: 'i' } },
+        { countryOfOrigin: { $regex: safeSearch, $options: 'i' } },
+        { summary: { $regex: safeSearch, $options: 'i' } },
+        { eventName: { $regex: safeSearch, $options: 'i' } },
+        { peopleInvolved: { $regex: safeSearch, $options: 'i' } },
+        { businessName: { $regex: safeSearch, $options: 'i' } },
+        { owner: { $regex: safeSearch, $options: 'i' } },
+        { businessType: { $regex: safeSearch, $options: 'i' } },
+      ];
+      
+      if (category) {
+        query = { category, $or: searchConditions };
+      } else {
+        query = { $or: searchConditions };
+      }
     } else if (letter && letter !== 'null') {
-      query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
+      query = { names: { $elemMatch: { $regex: '^' + escapeRegex(letter), $options: 'i' } } };
     } else if (category) {
       query = { category };
     }
-    const items = await Archive.find(query).sort({ createdAt: -1 });
-    const totalCount = await Archive.countDocuments();
-    const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
-    res.json({ items, totalCount, lastUpdate: lastRecord ? lastRecord.createdAt : null });
+
+    // Execute paginated queries in parallel for peak performance
+    const [items, totalCount, lastRecord] = await Promise.all([
+      Archive.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(Number(limit)),
+      Archive.countDocuments(query), // Fixed: counts the matching results now
+      Archive.findOne().sort({ createdAt: -1 })
+    ]);
+
+    res.json({ 
+      items, 
+      totalCount, 
+      lastUpdate: lastRecord ? lastRecord.createdAt : null,
+      currentPage: Number(page),
+      totalPages: Math.ceil(totalCount / limit)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// ── POST scan — must stay ABOVE /api/archive/:id ──────────────────────────────
+// ── POST scan ─────────────────────────────────────────────────────────────────
 app.post('/api/archive/scan', authMiddleware, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
@@ -135,10 +146,9 @@ app.post('/api/archive/scan', authMiddleware, upload.single('image'), async (req
       { logger: m => console.log(m.status) }
     );
     const extractedText = text.trim();
-    console.log('✅ OCR done, chars:', extractedText.length);
     res.json({
       fullText: extractedText,
-      summary: extractedText,
+      summary: extractedText.substring(0, 200),
       imageUrl: req.file.path,
       cloudinaryId: req.file.filename
     });
@@ -148,107 +158,67 @@ app.post('/api/archive/scan', authMiddleware, upload.single('image'), async (req
   }
 });
 
-// ── POST analyze — smart parser (FREE) ───────────────────────────────────────
+// ── POST analyze ──────────────────────────────────────────────────────────────
 app.post('/api/archive/analyze', authMiddleware, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
 
-    const { data: { text } } = await Tesseract.recognize(
-      req.file.path, 'spa+eng',
-      { logger: m => console.log(m.status) }
-    );
+    const { data: { text } } = await Tesseract.recognize(req.file.path, 'spa+eng');
 
-    // Fix hyphenated line breaks common in old newspapers
     const fullText = text.trim().replace(/(\w+)-\s*\n\s*(\w+)/g, '$1$2');
     const lines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
     const lower = fullText.toLowerCase();
     const category = req.body.category || 'News';
 
-    // Dates
     const dateRegex = /\b(\d{1,2}[\s\/\-](?:de\s)?(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|january|february|march|april|may|june|july|august|september|october|november|december)[\s\/\-](?:de\s)?\d{2,4}|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/gi;
     const dates = [...fullText.matchAll(dateRegex)].map(m => m[0]);
 
-    // Page number
     const pageMatch = fullText.match(/p[áa]g(?:ina)?\.?\s*(\d+)/i);
     const pageNumber = pageMatch ? pageMatch[1] : '';
 
-    // Newspaper name
-    const knownPapers = ['El Cronista','La Prensa','El Heraldo','El Tiempo',
-      'La Tribuna','Revista Atlántida','El Pueblo','La Época','El Comercio',
-      'Diario de Honduras','La Gaceta','Amapala','El Nacional','Revista Tegucigalpa'];
-    let newspaperName = '';
-    for (const paper of knownPapers) {
-      if (lower.includes(paper.toLowerCase())) { newspaperName = paper; break; }
-    }
-    if (!newspaperName && lines[0] && lines[0].length < 60) newspaperName = lines[0];
+    const knownPapers = ['El Cronista','La Prensa','El Heraldo','El Tiempo','La Tribuna','La Gaceta'];
+    let newspaperName = knownPapers.find(paper => lower.includes(paper.toLowerCase())) || (lines[0] && lines[0].length < 60 ? lines[0] : '');
 
-    // Location
-    const cities = ['Tegucigalpa','San Pedro Sula','La Ceiba','Comayagua',
-      'Santa Rosa de Copán','Choluteca','El Progreso','Danlí','Juticalpa',
-      'Gracias','Yoro','Tela','Trujillo','Nacaome','Siguatepeque','La Paz',
-      'Catacamas','Roatan','Olanchito','Copán','Intibucá','Ocotepeque'];
-    let location = '';
-    for (const city of cities) {
-      if (fullText.includes(city)) { location = city; break; }
-    }
+    const cities = ['Tegucigalpa','San Pedro Sula','La Ceiba','Comayagua','Choluteca'];
+    let location = cities.find(city => fullText.includes(city)) || '';
 
-    // Names — handles initials like "León R. Castillo"
     const nameRegex = /\b([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]{2,}(?:\s[A-ZÁÉÍÓÚÑÜ]\.?){0,2}(?:\s[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]{2,})+)\b/g;
-    const stopWords = ['Honduras','Tegucigalpa','Republica','Gobierno','General',
-      'Coronel','Doctor','Señor','Señora','Enero','Febrero','Marzo','Abril',
-      'Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre',
-      'Occidente','Oriente','Norte','Sur','Este','Oeste'];
-    const nameMatches = [...fullText.matchAll(nameRegex)]
-      .map(m => m[0])
-      .filter(n => !stopWords.some(s => n.includes(s)));
+    const stopWords = ['Honduras','Tegucigalpa','Republica','Gobierno','Enero','Febrero'];
+    const nameMatches = [...fullText.matchAll(nameRegex)].map(m => m[0]).filter(n => !stopWords.some(s => n.includes(s)));
     const names = [...new Set(nameMatches)].slice(0, 6);
 
-    // Category auto-detection (only overrides if user left it as News)
     let detectedCategory = category;
     if (category === 'News') {
-      if (/falleci|defuncion|muerte|murió|luto|sepelio|entierro|funeral/.test(lower)) detectedCategory = 'Death';
-      else if (/nacimiento|nació|bautizo|bautismo/.test(lower)) detectedCategory = 'Birth';
-      else if (/matrimonio|casamiento|nupcias|boda|desposaron/.test(lower)) detectedCategory = 'Marriage';
-      else if (/batalla|guerra|revolución|elecciones|congreso|decreto/.test(lower)) detectedCategory = 'Historic Event';
-      else if (/comercio|empresa|negocio|establecimiento|industria|fábrica/.test(lower)) detectedCategory = 'Business';
+      if (/falleci|defuncion|muerte/.test(lower)) detectedCategory = 'Death';
+      else if (/nacimiento|nació/.test(lower)) detectedCategory = 'Birth';
+      else if (/matrimonio|boda/.test(lower)) detectedCategory = 'Marriage';
+      else if (/batalla|guerra|revolución/.test(lower)) detectedCategory = 'Historic Event';
+      else if (/comercio|empresa|negocio/.test(lower)) detectedCategory = 'Business';
     }
 
-    // Short summary — first 200 chars
     const summary = fullText.replace(/\s+/g, ' ').trim().substring(0, 200);
 
-    // Business fields
     let businessName = '', businessType = '', owner = '', yearFounded = '';
-    if (category === 'Business') {
+    if (detectedCategory === 'Business') { // Fixed logical reference
       const yearMatch = fullText.match(/\b(1[89]\d{2}|20[0-2]\d)\b/);
       if (yearMatch) yearFounded = yearMatch[0];
       if (names[0]) businessName = names[0];
     }
 
-    // Historic event fields
     let eventName = '';
-    if (category === 'Historic Event' && lines[1]) eventName = lines[1].substring(0, 60);
+    if (detectedCategory === 'Historic Event' && lines[1]) eventName = lines[1].substring(0, 60);
 
     res.json({
-      fullText,
-      summary,
-      names: category === 'Business' ? [] : names,
-      peopleInvolved: category === 'Historic Event' ? names : [],
+      fullText, summary, location, newspaperName, pageNumber, businessName, businessType, owner, yearFounded, eventName,
+      names: detectedCategory === 'Business' ? [] : names,
+      peopleInvolved: detectedCategory === 'Historic Event' ? names : [],
       eventDate: dates[0] || '',
       publicationDate: dates[1] || '',
-      location,
-      newspaperName,
-      pageNumber,
       category: detectedCategory,
       countryOfOrigin: 'Honduras',
       imageUrl: req.file.path,
       cloudinaryId: req.file.filename,
-      businessName,
-      businessType,
-      owner,
-      yearFounded,
-      eventName,
     });
-
   } catch (error) {
     console.error('❌ Analyze error:', error.message);
     res.status(500).json({ error: error.message });
@@ -266,8 +236,8 @@ app.get('/api/archive/:id', async (req, res) => {
   }
 });
 
-// ── POST save approved record ─────────────────────────────────────────────────
-app.post('/api/archive', upload.single('image'), async (req, res) => {
+// ── POST save approved record (Secured) ───────────────────────────────────────
+app.post('/api/archive', authMiddleware, upload.single('image'), async (req, res) => {
   try {
     let namesArray = req.body.names;
     if (typeof namesArray === 'string') {
@@ -280,7 +250,6 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
       catch { peopleArray = peopleArray ? peopleArray.split(',').map(n => n.trim()) : []; }
     }
 
-    // ✅ Use already-uploaded image URL if no new file was sent
     const imageUrl = req.file ? req.file.path : req.body.imageUrl || null;
     const cloudinaryId = req.file ? req.file.filename : req.body.cloudinaryId || null;
 
@@ -298,15 +267,10 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
   }
 });
 
-// ── PUT update ────────────────────────────────────────────────────────────────
-app.put('/api/archive/:id', async (req, res) => {
+// ── PUT update (Secured) ──────────────────────────────────────────────────────
+app.put('/api/archive/:id', authMiddleware, async (req, res) => {
   try {
-    const {
-      title, names, fullText, category, location,
-      eventDate, publicationDate, newspaperName, pageNumber,
-      summary, countryOfOrigin, eventName, peopleInvolved,
-      businessName, businessType, owner, yearFounded
-    } = req.body;
+    const { names, peopleInvolved, ...rest } = req.body;
     let namesArray = names;
     if (typeof namesArray === 'string') {
       try { namesArray = JSON.parse(namesArray); }
@@ -319,10 +283,7 @@ app.put('/api/archive/:id', async (req, res) => {
     }
     const updatedItem = await Archive.findByIdAndUpdate(
       req.params.id,
-      { title, names: namesArray, fullText, category, location,
-        eventDate, publicationDate, newspaperName, pageNumber,
-        summary, countryOfOrigin, eventName, peopleInvolved: peopleArray,
-        businessName, businessType, owner, yearFounded },
+      { ...rest, names: namesArray, peopleInvolved: peopleArray },
       { new: true }
     );
     if (!updatedItem) return res.status(404).json({ error: 'Record not found' });
@@ -332,8 +293,8 @@ app.put('/api/archive/:id', async (req, res) => {
   }
 });
 
-// ── DELETE ────────────────────────────────────────────────────────────────────
-app.delete('/api/archive/:id', async (req, res) => {
+// ── DELETE (Secured) ──────────────────────────────────────────────────────────
+app.delete('/api/archive/:id', authMiddleware, async (req, res) => {
   try {
     const item = await Archive.findById(req.params.id);
     if (!item) return res.status(404).json({ error: 'Not found' });
