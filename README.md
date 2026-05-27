@@ -200,6 +200,7 @@ This archive is built and maintained by a volunteer with no budget. If this proj
 **[💙 Support via PayPal](https://paypal.me/yourusername)**
 
 Every contribution helps cover future hosting costs as the archive grows.
+This is a prototype so no link to my paypal 
 
 ---
 
