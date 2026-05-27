@@ -2,7 +2,7 @@
 
 > A free, open-source digital archive preserving the historical memory of Honduras through newspaper clippings, portraits, vital records, and historic documents.
 
-![Project Banner](docs/hero-banner.png)
+![Project Banner](frontend/public/image.png)
 
 ---
 
@@ -87,16 +87,16 @@ The archive contains portraits, birth/marriage/death notices, business records, 
 ## 📸 Screenshots
 
 ### Homepage — Registro del Día
-![Homepage](docs/screenshot-home.png)
+![Homepage](frontend/public/Screenshot%202026-05-27%20162111.png)
 
 ### Upload & Smart Scan
-![Upload](docs/screenshot-upload.png)
+![Upload](frontend/public/Screenshot%202026-05-27%20163126.png)
 
 ### Record Detail
-![Record Detail](docs/screenshot-record.png)
+![Record Detail](frontend/public/Screenshot%202026-05-27%20163234.png)
 
 ### Admin Panel
-![Admin Panel](docs/screenshot-admin.png)
+![Admin Panel](frontend/public/Screenshot%202026-05-27%20163254.png)
 
 ---
 
