@@ -111,7 +111,7 @@ export default function TodayInHistory() {
            {/* Header image */}
 <div style={{ 
   width: '100%', 
-  height: '160px', // Adjust this height as needed
+  height: '180px', // Adjust this height as needed
   marginBottom: '20px', 
   borderRadius: '8px', 
   overflow: 'hidden', 
