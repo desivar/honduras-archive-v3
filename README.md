@@ -2,7 +2,7 @@
 
 > A free, open-source digital archive preserving the historical memory of Honduras through newspaper clippings, portraits, vital records, and historic documents.
 
-![Project Banner](frontend/public/heroimprov.png)
+![Project Banner](./frontend/public/heroimprov.png)
 
 ---
 
