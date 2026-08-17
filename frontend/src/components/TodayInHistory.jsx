@@ -108,11 +108,29 @@ export default function TodayInHistory() {
 
           <div style={{ position: 'relative', zIndex: 3, padding: '28px 32px 24px' }}>
 
-            {/* Header image */}
-            <div style={{ width: '100%', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(234,198,61,0.5)', background: 'rgba(0,0,0,0.2)', display: 'flex', justifyContent: 'center' }}>
-              <img src="/white.png" alt="Archivo Histórico de Honduras"
-                style={{ width: '100%', height: 'auto', maxHeight: '260px', objectFit: 'contain', display: 'block', opacity: 0.98 }} />
-            </div>
+           {/* Header image */}
+<div style={{ 
+  width: '100%', 
+  height: '140px', // Adjust this height as needed
+  marginBottom: '20px', 
+  borderRadius: '8px', 
+  overflow: 'hidden', 
+  border: '2px solid rgba(234,198,61,0.5)', 
+  background: 'rgba(0,0,0,0.2)' 
+}}>
+  <img 
+    src="/white.png" 
+    alt="Archivo Histórico de Honduras"
+    style={{ 
+      width: '100%', 
+      height: '100%', 
+      objectFit: 'cover', // Changes how the image scales to fill the box smoothly
+      objectPosition: 'center', 
+      display: 'block', 
+      opacity: 0.98 
+    }} 
+  />
+</div>
 
             {/* Date header */}
             <div style={{ textAlign: 'center', marginBottom: '20px', animation: 'fadeInDown 0.8s ease both' }}>
