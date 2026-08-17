@@ -24,8 +24,11 @@ const getDailyIndex = (total) => {
   return seed % total;
 };
 
-const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")`;
-
+{/* Header image */}
+        <div style={{ width: '100%', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(234,198,61,0.5)', background: 'rgba(0,0,0,0.2)', display: 'flex', justifyContent: 'center' }}>
+          <img src="/white.png" alt="Archivo Histórico de Honduras"
+            style={{ width: '100%', height: 'auto', maxHeight: '260px', objectFit: 'contain', display: 'block', opacity: 0.98 }} />
+        </div>
 export default function TodayInHistory() {
   const navigate = useNavigate();
   const [record, setRecord] = useState(null);
