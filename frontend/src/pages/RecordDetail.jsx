@@ -96,11 +96,15 @@ const RecordDetail = () => {
     setTimeout(() => setCopySuccess(''), 2000);
   };
 
-  const generateCitation = () => {
-    const source = record.newspaperName || 'Archivo Nacional';
-    const date = record.publicationDate || record.eventDate || 'n.d.';
-    return `${displayName} (${date}). ${record.category}. ${record.location || 'Honduras'}: ${source}. Recuerdos de Honduras. ${recordUrl}`;
-  };
+ const generateCitation = () => {
+  const source = record.newspaperName || 'Archivo Nacional';
+  const date = record.publicationDate || record.eventDate || 'n.d.';
+  const location = record.location || 'Honduras';
+  const page = record.pageNumber ? `, p. ${record.pageNumber}` : '';
+
+  // Chicago Style: "Title," Source (Location), Date, Page. URL.
+  return `"${displayName}," ${source} (${location}), ${date}${page}. ${recordUrl}`;
+};
 
   const handleCopyCitation = () => {
     navigator.clipboard.writeText(generateCitation());
