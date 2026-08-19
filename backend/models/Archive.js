@@ -1,14 +1,33 @@
 const mongoose = require('mongoose');
 
 const archiveSchema = new mongoose.Schema({
-  names: [String],
-  countryOfOrigin: { type: String, default: 'Honduras' }, // 🌍 Added for your international news
+  category: { type: String, default: 'Portrait' }, // Portrait, News, Birth, Marriage, Death, Historic Event, Business
+
+  // Shared fields
+  eventDate: String,
+  publicationDate: String,
+  location: String,
   newspaperName: String,
-  dateOfPublication: String,
   pageNumber: String,
   summary: String,
   imageUrl: String,
-  familySearchId: String, // 💡 Great for your volunteer work!
+  cloudinaryId: String,
+  familySearchId: String,
+
+  // Person record fields
+  names: [String],
+  countryOfOrigin: { type: String, default: 'Honduras' },
+
+  // Historic Event fields
+  eventName: String,
+  peopleInvolved: [String],
+
+  // Business fields
+  businessName: String,
+  businessType: String,
+  owner: String,
+  yearFounded: String,
+
   createdAt: { type: Date, default: Date.now }
 });
 
