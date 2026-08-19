@@ -137,6 +137,37 @@ app.get('/api/archive', async (req, res) => {
   }
 });
 
+// ── Date normalization → Chicago-style "DD Month YYYY", preserving source language ──
+const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MONTHS_EN = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+const fullYear = (y) => y.length === 2 ? (parseInt(y, 10) > 30 ? '18' + y : '19' + y) : y;
+
+const normalizeDate = (raw) => {
+  if (!raw) return '';
+
+  // "8 de septiembre de 1917" / "8 septiembre 1917"
+  let m = raw.match(/(\d{1,2})\s*(?:de\s+)?(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\s*(?:de\s+)?(\d{2,4})/i);
+  if (m) return `${parseInt(m[1], 10)} ${capitalize(m[2])} ${fullYear(m[3])}`;
+
+  // "September 8, 1917" / "September 8 1917"
+  m = raw.match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s*(\d{1,2}),?\s*(\d{2,4})/i);
+  if (m) return `${parseInt(m[2], 10)} ${capitalize(m[1])} ${fullYear(m[3])}`;
+
+  // "8 September 1917" (already day-first)
+  m = raw.match(/(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{2,4})/i);
+  if (m) return `${parseInt(m[1], 10)} ${capitalize(m[2])} ${fullYear(m[3])}`;
+
+  // Numeric "8/9/1917" — assumes DD/MM/YYYY (Latin American convention), outputs Spanish month name
+  m = raw.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (m) {
+    const idx = parseInt(m[2], 10) - 1;
+    const monthName = MONTHS_ES[idx] ? capitalize(MONTHS_ES[idx]) : m[2];
+    return `${parseInt(m[1], 10)} ${monthName} ${fullYear(m[3])}`;
+  }
+
+  return raw; // unrecognized format — return as-is rather than losing data
+};
 // ── POST scan ─────────────────────────────────────────────────────────────────
 app.post('/api/archive/scan', authMiddleware, upload.single('image'), async (req, res) => {
   try {
