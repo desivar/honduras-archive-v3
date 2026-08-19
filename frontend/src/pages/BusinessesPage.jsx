@@ -109,7 +109,7 @@ const copyCitation = (e) => {
       </div>
 
       <div style={{ padding: '12px 16px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <button onClick={copyCitation} style={citeBtnStyle}>📄 Copy APA Citation</button>
+        <button onClick={copyCitation} style={citeBtnStyle}>📄 Copy Chicago Citation</button>
         {isAdmin && (
           <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={handleEdit} style={editBtnStyle}>✏️ Edit</button>
