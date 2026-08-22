@@ -138,16 +138,16 @@ const copyCitation = (e) => {
         <button onClick={copyCitation} style={btnStyle(accentColor, true)}>📄 Cite</button>
 
         {isAdmin && (
-          <>
-            <button
-              onClick={() => window.location.href = `/edit/${record._id}`}
-              style={btnStyle('#586379')}
-            >
-              ✏️ Edit
-            </button>
-            <button onClick={handleDelete} style={btnStyle('#a94442')}>🗑️ Delete</button>
-          </>
-        )}
+  <>
+    <button
+      onClick={() => navigate(`/edit/${record._id}`)}
+      style={btnStyle('#586379')}
+    >
+      ✏️ Edit
+    </button>
+    <button onClick={handleDelete} style={btnStyle('#a94442')}>🗑️ Delete</button>
+  </>
+)}
       </div>
     </div>
   );
