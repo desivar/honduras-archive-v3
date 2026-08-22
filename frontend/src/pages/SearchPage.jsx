@@ -78,17 +78,20 @@ const SearchPage = () => {
     }
   };
 
-  const fetchCounts = async () => {
-    try {
-      const res = await axios.get(API);
-      const items = res.data.items || [];
-      const c = {};
-      COLLECTIONS.forEach(col => {
-        c[col.key] = items.filter(r => r.category === col.key).length;
-      });
-      setCounts(c);
-    } catch (e) { console.error(e); }
-  };
+const fetchCounts = async () => {
+  try {
+    const results = await Promise.all(
+      COLLECTIONS.map(col =>
+        axios.get(`${API}?category=${encodeURIComponent(col.key)}&limit=1`)
+      )
+    );
+    const c = {};
+    COLLECTIONS.forEach((col, i) => {
+      c[col.key] = results[i].data.totalCount || 0;
+    });
+    setCounts(c);
+  } catch (e) { console.error(e); }
+};
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
